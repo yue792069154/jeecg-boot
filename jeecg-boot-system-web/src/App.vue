@@ -1,4 +1,4 @@
-<template>
+<template>               
   <a-locale-provider :locale="locale">
     <div id="app">
       <router-view/>

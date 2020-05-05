@@ -419,7 +419,7 @@ public class SysUserController {
                 return Result.ok("文件导入成功！数据行数：" + listSysUsers.size());
             } catch (Exception e) {
                 log.error(e.getMessage(),e);
-                return Result.error("抱歉! 您导入的数据中用户名已经存在.");
+                return Result.error("文件导入失败，可能的原因是唯一约束存在重复");
             } finally {
                 try {
                     file.getInputStream().close();

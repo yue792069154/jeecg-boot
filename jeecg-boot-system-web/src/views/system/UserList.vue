@@ -316,7 +316,7 @@
           });
           that.$confirm({
             title: "确认操作",
-            content: "是否" + (status == 1 ? "解冻" : "冻结") + "选中账号?",
+            content: "是否" + (status == 1 ? "解冻" : "确定冻结吗?") + "选中账号?",
             onOk: function () {
               frozenBatch({ids: ids, status: status}).then((res) => {
                 if (res.success) {

@@ -73,6 +73,22 @@ public class SysPositionController {
         return result;
     }
 
+    @AutoLog(value = "职务表-列表查询")
+    @ApiOperation(value = "职务表-列表查询", notes = "职务表-列表查询")
+    @GetMapping(value = "/list")
+    @RequestMapping(value = "/queryall", method = RequestMethod.GET)
+    public Result<List<SysPosition>> queryall() {
+        Result<List<SysPosition>> result = new Result<>();
+        List<SysPosition> list = sysPositionService.list();
+        if(list==null||list.size()<=0) {
+            result.error500("未找到职务信息");
+        }else {
+            result.setResult(list);
+            result.setSuccess(true);
+        }
+        return result;
+    }
+
     /**
      * 添加
      *

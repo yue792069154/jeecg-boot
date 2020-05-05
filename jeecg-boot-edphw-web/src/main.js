@@ -1,17 +1,19 @@
 import Vue from 'vue';
-import iView from 'iview';
+import ViewUI from 'view-design';
 import VueRouter from 'vue-router';
 import Routers from './router';
 import Vuex from 'vuex';
 import Util from './libs/util';
 import App from './app.vue';
-import 'iview/dist/styles/iview.css';
+import Storage from 'vue-ls';
+import store from './store/index';
+import 'view-design/dist/styles/iview.css';
 
 
 Vue.use(VueRouter);
 Vue.use(Vuex);
-
-Vue.use(iView);
+Vue.use(Storage);
+Vue.use(ViewUI);
 
 
 
@@ -23,32 +25,15 @@ const RouterConfig = {
 const router = new VueRouter(RouterConfig);
 
 router.beforeEach((to, from, next) => {
-    iView.LoadingBar.start();
+    ViewUI.LoadingBar.start();
     Util.title(to.meta.title);
     next();
 });
 
 router.afterEach(() => {
-    iView.LoadingBar.finish();
+    ViewUI.LoadingBar.finish();
     window.scrollTo(0, 0);
 });
-
-
-const store = new Vuex.Store({
-    state: {
-
-    },
-    getters: {
-
-    },
-    mutations: {
-
-    },
-    actions: {
-
-    }
-});
-
 
 new Vue({
     el: '#app',

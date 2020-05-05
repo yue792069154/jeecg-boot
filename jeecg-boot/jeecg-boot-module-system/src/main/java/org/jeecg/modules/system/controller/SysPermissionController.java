@@ -86,6 +86,7 @@ public class SysPermissionController {
 		return result;
 	}
 
+
 	/*update_begin author:wuxianquan date:20190908 for:先查询一级菜单，当用户点击展开菜单时加载子菜单 */
 	/**
 	 * 系统菜单列表(一级菜单)
@@ -199,6 +200,7 @@ public class SysPermissionController {
 			this.getAllAuthJsonArray(allauthjsonArray, allAuthList);
 			//路由菜单
 			json.put("menu", menujsonArray);
+			json.put("menuList", metaList);
 			//按钮权限
 			json.put("auth", authjsonArray);
 			//全部权限配置（按钮权限，访问权限）

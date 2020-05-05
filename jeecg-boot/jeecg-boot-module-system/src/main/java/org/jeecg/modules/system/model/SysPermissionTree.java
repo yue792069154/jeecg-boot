@@ -128,6 +128,13 @@ public class SysPermissionTree implements Serializable {
 	/*update_end author:wuxianquan date:20190908 for:model增加字段 */
 
 
+	private boolean menuActive;
+
+	private boolean menuShowSider;
+
+	private String menuActiveColor;
+
+
 	public SysPermissionTree() {
 	}
 
@@ -163,6 +170,33 @@ public class SysPermissionTree implements Serializable {
 			this.children = new ArrayList<SysPermissionTree>();
 		}
 		this.status = permission.getStatus();
+		this.menuActive = false;
+		this.menuShowSider = false;
+		this.menuActiveColor = "default";
+	}
+
+	public boolean getMenuActive() {
+		return menuActive;
+	}
+
+	public void setMenuActive(boolean menuActive) {
+		this.menuActive = menuActive;
+	}
+
+	public boolean getMenuShowSider() {
+		return menuShowSider;
+	}
+
+	public void setMenuShowSider(boolean menuShowSider) {
+		this.menuShowSider = menuShowSider;
+	}
+
+	public String getMenuActiveColor() {
+		return menuActiveColor;
+	}
+
+	public void setMenuActiveColor(String menuActiveColor) {
+		this.menuActiveColor = menuActiveColor;
 	}
 
 	public String getTitle() {
