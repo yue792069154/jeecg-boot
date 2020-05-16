@@ -27,16 +27,13 @@ const error = (error) => {
                 });
                 break;
             case 500:
-                if (token && data.message == "Token失效，请重新登录") {
+                if (data.message == "Token失效，请重新登录") {
                     Notice.error({
                         title: '登录已过期',
                         desc: '很抱歉，登录已过期，请重新登录',
                         duration: 2,
                         onClose: () => {
-                            store.dispatch('Logout').then(() => {
-                                Vue.ls.remove(ACCESS_TOKEN);
-                                window.location.reload();
-                            });
+                            
                         }
                     });
                 }

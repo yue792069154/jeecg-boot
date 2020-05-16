@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Date;
 
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -78,5 +80,23 @@ public class SysRole implements Serializable {
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
+    /**
+     * 删除状态（0，正常，1已删除）
+     */
+    @Excel(name = "删除状态", width = 15,dicCode="del_flag")
+    @TableLogic
+    private String delFlag;
+
+    /**
+     * 模糊查询
+     */
+    @TableField(exist=false)
+    private String keyword;
+
+    /**
+     * 模糊查询范围
+     */
+    @TableField(exist=false)
+    private String keywordRange;
 
 }

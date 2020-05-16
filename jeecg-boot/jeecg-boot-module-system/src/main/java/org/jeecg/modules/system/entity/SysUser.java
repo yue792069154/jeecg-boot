@@ -2,11 +2,13 @@ package org.jeecg.modules.system.entity;
 
 import java.util.Date;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jeecg.common.aspect.annotation.Dict;
 import org.jeecgframework.poi.excel.annotation.Excel;
+import javax.persistence.Transient;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -157,6 +159,18 @@ public class SysUser implements Serializable {
      * 同步工作流引擎1同步0不同步
      */
     private String activitiSync;
+
+    /**
+     * 模糊查询
+     */
+    @TableField(exist=false)
+    private String keyword;
+
+    /**
+     * 模糊查询范围
+     */
+    @TableField(exist=false)
+    private String keywordRange;
 
 
 }

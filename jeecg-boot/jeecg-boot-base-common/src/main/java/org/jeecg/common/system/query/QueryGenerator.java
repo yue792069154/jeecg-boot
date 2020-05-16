@@ -6,12 +6,7 @@ import java.math.BigDecimal;
 import java.net.URLDecoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -151,16 +146,31 @@ public class QueryGenerator {
 						queryWrapper.and(j -> j.like(field,vals[0]));
 					}
 				}else {
-					//根据参数值带什么关键字符串判断走什么类型的查询
-					QueryRuleEnum rule = convert2Rule(value);
-					value = replaceValue(rule,value);
-					// add -begin 添加判断为字符串时设为全模糊查询
-					//if( (rule==null || QueryRuleEnum.EQ.equals(rule)) && "class java.lang.String".equals(type)) {
-						// 可以设置左右模糊或全模糊，因人而异
-						//rule = QueryRuleEnum.LIKE;
-					//}
-					// add -end 添加判断为字符串时设为全模糊查询
-					addEasyQuery(queryWrapper, name, rule, value);
+
+					if("keyword".equals(name)){
+
+						QueryRuleEnum rule  = QueryRuleEnum.MULTIPLE_FIELD_LIKE_RULES;
+						value = replaceValue(QueryRuleEnum.MULTIPLE_FIELD_LIKE_RULES,value);
+						Object keywordRange=PropertyUtils.getSimpleProperty(searchObj, "keywordRange");
+						if(null!=keywordRange){
+							addEasyQuery(queryWrapper, "keyword", rule,value,new ArrayList(Arrays.asList(keywordRange.toString().split(","))));
+						}
+
+
+					}else if("keywordRange".equals(name)){
+
+					}else
+					{
+						//根据参数值带什么关键字符串判断走什么类型的查询
+						QueryRuleEnum rule = convert2Rule(value);
+						value = replaceValue(rule,value);
+						// add -begin 添加判断为字符串时设为全模糊查询
+						if( (rule==null || QueryRuleEnum.EQ.equals(rule)) && "class java.lang.String".equals(type)) {
+							rule = QueryRuleEnum.LIKE;
+						}
+						// add -end 添加判断为字符串时设为全模糊查询
+						addEasyQuery(queryWrapper, name, rule, value,new ArrayList<>());
+					}
 				}
 				
 			} catch (Exception e) {
@@ -174,7 +184,10 @@ public class QueryGenerator {
 		doSuperQuery(queryWrapper, parameterMap);
 		
 	}
-	
+
+	private static void addEasyQuery(QueryWrapper<?> queryWrapper, String keyword, QueryRuleEnum rule, ArrayList aList) {
+	}
+
 	//多字段排序 TODO 需要修改前端
 	public static void doMultiFieldsOrder(QueryWrapper<?> queryWrapper,Map<String, String[]> parameterMap) {
 		String column=null,order=null;
@@ -220,7 +233,7 @@ public class QueryGenerator {
 			
 			for (QueryCondition rule : conditions) {
 				if(oConvertUtils.isNotEmpty(rule.getField()) && oConvertUtils.isNotEmpty(rule.getRule()) && oConvertUtils.isNotEmpty(rule.getVal())){
-					addEasyQuery(queryWrapper, rule.getField(), QueryRuleEnum.getByValue(rule.getRule()), rule.getVal());
+					addEasyQuery(queryWrapper, rule.getField(), QueryRuleEnum.getByValue(rule.getRule()), rule.getVal(),new ArrayList<>());
 				}
 			}
 		}
@@ -303,6 +316,8 @@ public class QueryGenerator {
 			value = val.substring(0, val.length() - 1);
 		} else if (rule == QueryRuleEnum.IN) {
 			value = val.split(",");
+		}else if (rule == QueryRuleEnum.MULTIPLE_FIELD_LIKE_RULES) {
+			value = value;
 		} else {
 			//update-begin--Author:scott  Date:20190724 for：initQueryWrapper组装sql查询条件错误 #284-------------------
 			if(val.startsWith(rule.getValue())){
@@ -345,7 +360,7 @@ public class QueryGenerator {
 				temp = value;
 				break;
 			}
-			addEasyQuery(queryWrapper, name, rule, temp);
+			addEasyQuery(queryWrapper, name, rule, temp,new ArrayList<>());
 		}
 	}
 	
@@ -381,7 +396,7 @@ public class QueryGenerator {
 	 * @param rule         查询规则
 	 * @param value        查询条件值
 	 */
-	private static void addEasyQuery(QueryWrapper<?> queryWrapper, String name, QueryRuleEnum rule, Object value) {
+	private static void addEasyQuery(QueryWrapper<?> queryWrapper, String name, QueryRuleEnum rule, Object value, ArrayList<String> fieldList) {
 		if (value == null || rule == null || oConvertUtils.isEmpty(value)) {
 			return;
 		}
@@ -423,6 +438,11 @@ public class QueryGenerator {
 			break;
 		case RIGHT_LIKE:
 			queryWrapper.likeRight(name, value);
+			break;
+		case MULTIPLE_FIELD_LIKE_RULES:
+			for (String field : fieldList) {
+				queryWrapper.or().like(field, value);
+			}
 			break;
 		default:
 			log.info("--查询规则未匹配到---");
@@ -472,12 +492,12 @@ public class QueryGenerator {
 			for (int i = 0; i < values.length; i++) {
 				objs[i] = NumberUtils.parseNumber(values[i], propertyType);
 			}
-			addEasyQuery(queryWrapper, name, rule, objs);
+			addEasyQuery(queryWrapper, name, rule, objs,new ArrayList<>());
 		}else {
 			if (propertyType.equals(String.class)) {
-				addEasyQuery(queryWrapper, name, rule, converRuleValue(dataRule.getRuleValue()));
+				addEasyQuery(queryWrapper, name, rule, converRuleValue(dataRule.getRuleValue()),new ArrayList<>());
 			} else {
-				addEasyQuery(queryWrapper, name, rule, NumberUtils.parseNumber(dataRule.getRuleValue(), propertyType));
+				addEasyQuery(queryWrapper, name, rule, NumberUtils.parseNumber(dataRule.getRuleValue(), propertyType),new ArrayList<>());
 			}
 		}
 	}

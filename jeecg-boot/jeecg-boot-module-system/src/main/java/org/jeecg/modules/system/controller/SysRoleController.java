@@ -113,6 +113,7 @@ public class SysRoleController {
 		Result<SysRole> result = new Result<SysRole>();
 		try {
 			role.setCreateTime(new Date());
+			role.setDelFlag("0");
 			sysRoleService.save(role);
 			result.success("添加成功！");
 		} catch (Exception e) {
@@ -253,6 +254,10 @@ public class SysRoleController {
 		QueryWrapper<SysRole> queryWrapper = QueryGenerator.initQueryWrapper(sysRole, request.getParameterMap());
 		//Step.2 AutoPoi 导出Excel
 		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+		String selections = request.getParameter("selections");
+		if(!oConvertUtils.isEmpty(selections)){
+			queryWrapper.in("id",selections.split(","));
+		}
 		List<SysRole> pageList = sysRoleService.list(queryWrapper);
 		//导出文件名称
 		mv.addObject(NormalExcelConstants.FILE_NAME,"角色列表");

@@ -3,15 +3,16 @@
         <div class="table-alert">
             <slot name="alert"></slot>
         </div>
-        <div class="table-filter">
-            <card-pannel>
-                <slot name="filter"></slot>
-            </card-pannel>
-        </div>
         <div class="table-action">
-            <card-pannel class="padding-10">
+            <card-pannel>
                 <div class="table-action-content">
-                    <slot name="action"></slot>
+                    <div class="table-flex">
+                        <slot name="filter"></slot>
+
+                    </div>
+                    <div class="table-flex">
+                        <slot name="action"></slot>
+                    </div>
                 </div>
             </card-pannel>
         </div>
@@ -24,14 +25,14 @@
         <div class="table-page">
             <slot name="page"></slot>
         </div>
-        <Drawer :styles="drawerStyles" v-model="showDrawer" :title="drawerTitle" :width="drawerWidth"
+        <Drawer @on-close="onCancel" :styles="drawerStyles" v-model="showDrawer" :title="drawerTitle" :width="drawerWidth"
             class="table-drawer">
             <div class="table-drawer-content">
                 <slot name="drawer"></slot>
             </div>
             <div class="table-drawer-footer">
-                <Button style="margin-right: 8px" @click="showDrawer = false">取消</Button>
-                <Button type="primary" @click="onOk">确定</Button>
+                <Button style="margin-right: 8px" @click="onCancel">取消</Button>
+                <Button type="primary" :loading="showLoading" @click="onOk">确定</Button>
             </div>
         </Drawer>
     </div>
@@ -56,7 +57,8 @@
                     overflow: 'auto',
                     paddingBottom: '53px',
                     position: 'static'
-                }
+                },
+                showLoading: false
             }
         },
         mounted() {
@@ -64,7 +66,12 @@
         },
         methods: {
             onOk() {
+               
                 this.$emit("on-ok")
+            },
+            onCancel() {
+                 this.showDrawer = false;
+                this.$emit("on-cancel")
             }
         }
     };
@@ -75,14 +82,25 @@
         margin-bottom: 10px;
     }
 
-    .table-filter {
-        padding: 0px;
-        margin-bottom: 10px;
-    }
-
     .table-action {
         padding: 0px;
         margin-bottom: 10px;
+
+
+        .table-action-content {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px;
+
+
+
+        }
+
+
+        label {
+            cursor: pointer;
+            margin-right: 2px;
+        }
     }
 
     .table-summary {
@@ -136,6 +154,7 @@
 
         .table-drawer-content {
             padding: 0px;
+
         }
 
         .table-drawer-footer {
@@ -150,19 +169,13 @@
         }
     }
 
-    .table-action {
+    .table-flex {
 
-        .table-action-content{
-          
-        }
+        display: flex;
 
-        .padding-10 {
-            padding: 10px;
-        }
+    }
 
-        label {
-            cursor: pointer;
-            margin-right: 2px;
-        }
+    .padding-10 {
+        padding: 10px;
     }
 </style>

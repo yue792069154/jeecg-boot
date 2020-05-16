@@ -1,4 +1,4 @@
-import home from './views/home/master/home';
+import home from './views/home/portal/home';
 
 const routers = [{
     path: '/',
@@ -14,7 +14,17 @@ const routers = [{
     component: home,
     children: [{
         path: 'login',
-        component: (resolve) => require(['./views/user/userList.vue'], resolve)
+        component: (resolve) => require(['./views/user/sysUserList.vue'], resolve)
+    }]
+}, {
+    path: '/home',
+    meta: {
+        title: ''
+    },
+    component: home,
+    children: [{
+        path: 'role',
+        component: (resolve) => require(['./views/role/sysRoleList.vue'], resolve)
     }]
 }];
 export default routers;

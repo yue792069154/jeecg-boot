@@ -1,0 +1,184 @@
+<template>
+    <Form label-position="top" ref="modelForm" :model="modelForm" :rules="modelFormRule">
+        <FormItem label="角色名称" prop="roleName">
+            <Input placeholder="请输入角色名称" v-model="modelForm.roleName" clearable />
+        </FormItem>
+        <FormItem label="角色编码" prop="roleCode">
+            <Input placeholder="请输入角色编码" v-model="modelForm.roleCode" clearable />
+        </FormItem>
+    </Form>
+</template>
+<script>
+    import Vue from 'vue';
+    import _ from 'lodash';
+    import {
+        ROLE_QUERY_SERVICE,
+        ROLE_ADD_SERVICE,
+        ROLE_EDIT_SERVICE,
+        DUPLICATE_CHECK_SERVICE
+    } from "../../axios/api";
+    import {
+        Poptip
+    } from 'view-design';
+    import {
+        ACCESS_TOKEN
+    } from '../../store/mutations';
+
+    export default {
+        components: {
+            
+        },
+        props: {
+            id: {
+                type: String
+            },
+        },
+        data() {
+            return {
+
+                modelForm: {
+                    id: null,
+                    roleName: null,
+                    roleCode: null
+                },
+                modelFormRule: {
+                    roleName: [{
+                        required: true,
+                        validator: this.validateRoleName,
+                        trigger: 'change,blur'
+                    }],
+                    roleCode: [{
+                        required: true,
+                        validator: this.validateRoleCode,
+                        trigger: 'change,blur'
+                    }]
+                }
+
+            }
+        },
+        watch: {
+            id(newValue, oldValue) {
+                this.getRole(newValue);
+            }
+        },
+        mounted() {
+
+            this.fileUploadHeaders = {
+                "X-Access-Token": Vue.ls.get(ACCESS_TOKEN)
+            };
+
+        },
+        methods: {
+            getRole(id) {
+
+                var vm = this;
+
+                this.modelForm.id = id;
+
+                if (!_.isNil(id)) {
+                    ROLE_QUERY_SERVICE({
+                        id: id
+                    }).then(response => {
+
+                        if (response.success) {
+                            var result = response.result;
+                            if (!_.isNil(result)) {
+                                for (var item in this.modelForm) {
+                                    this.modelForm[item] = result[item];
+                                };
+                            };
+                        }
+                    });
+                };
+            },
+            onSaveRole() {
+
+                var vm = this;
+
+                this.$refs['modelForm'].validate((valid) => {
+                    if (valid) {
+
+                        if (_.isNil(vm.modelForm.id)) {
+
+                            ROLE_ADD_SERVICE(vm.modelForm).then(response => {
+                                if (response.success) {
+
+                                    vm.$Message.success('添加成功');
+                                    vm.$emit("on-save-success");
+                                    vm.resetFields();
+
+                                }
+                            });
+
+                        } else {
+
+                            ROLE_EDIT_SERVICE(vm.modelForm).then(response => {
+                                if (response.success) {
+
+                                    vm.$Message.success('编辑成功');
+                                    vm.$emit("on-save-success");
+                                    vm.resetFields();
+
+                                }
+                            });
+
+                        }
+
+
+
+
+                    } else {
+                        vm.$emit("on-save-error");
+                    };
+                });
+
+
+            },
+            resetFields() {
+                this.$refs.modelForm.resetFields();
+            },
+            validateRoleName(rule, value, callback) {
+
+                if (_.isNil(value)) {
+                    callback("请输入角色名称")
+                } else {
+                    DUPLICATE_CHECK_SERVICE({
+                        tableName: 'sys_role',
+                        fieldName: 'role_name',
+                        fieldVal: value,
+                        dataId: this.modelForm.id
+                    }).then(response => {
+                        if (response.success) {
+                            callback()
+                        } else {
+                            callback("角色名称已存在")
+                        }
+                    });
+
+                }
+            },
+            validateRoleCode(rule, value, callback) {
+
+                if (_.isNil(value)) {
+                    callback("请输入角色编码")
+                } else {
+                    DUPLICATE_CHECK_SERVICE({
+                        tableName: 'sys_role',
+                        fieldName: 'role_code',
+                        fieldVal: value,
+                        dataId: this.modelForm.id
+                    }).then(response => {
+                        if (response.success) {
+                            callback()
+                        } else {
+                            callback("角色编码已存在")
+                        }
+                    });
+                }
+            }
+        }
+    };
+</script>
+<style lang="less" scoped>
+    
+</style>

@@ -21,26 +21,35 @@ const PERMSSION_LIST_SERVICE = (params) => getAction("/sys/permission/getUserPer
 const USER_LIST_SERVICE = (params) => getAction("/sys/user/list", appSettings.jeecg.serviceSiteRootUrl, params);
 const USER_ADD_SERVICE = (params) => postAction("/sys/user/add", appSettings.jeecg.serviceSiteRootUrl, params);
 const USER_EDIT_SERVICE = (params) => putAction("/sys/user/edit", appSettings.jeecg.serviceSiteRootUrl, params);
+const USER_QUERY_SERVICE = (params) => getAction("/sys/user/queryById", appSettings.jeecg.serviceSiteRootUrl, params);
 const USER_DELETE_SERVICE = (params) => deleteAction("/sys/user/delete", appSettings.jeecg.serviceSiteRootUrl, params);
 const USER_DELETE_BATCH_SERVICE = (params) => deleteAction("/sys/user/deleteBatch", appSettings.jeecg.serviceSiteRootUrl, params);
 const USER_ONLY_SERVICE = (params) => getAction("/sys/user/checkOnlyUser", appSettings.jeecg.serviceSiteRootUrl, params);
 const USER_BATCH_SERVICE = (params) => putAction("/sys/user/frozenBatch", appSettings.jeecg.serviceSiteRootUrl, params);
 const USER_CHANGE_PASSWORD_SERVICE = (params) => putAction("/sys/user/changPassword", appSettings.jeecg.serviceSiteRootUrl, params);
-const USER_EXCEL_EXPORT_SERVICE = (params) => putAction("/sys/user/exportXls", appSettings.jeecg.serviceSiteRootUrl, params);
-const USER_EXCEL_IMPORT_SERVICE = (params) => putAction("sys/user/importExcel", appSettings.jeecg.serviceSiteRootUrl, params);
 const USER_ROLE_LIST_SERVICE = (params) => getAction("/sys/user/queryUserRole", appSettings.jeecg.serviceSiteRootUrl, params);
 const USER_DEPART_LIST_SERVICE = (params) => getAction("/sys/user/userDepartList", appSettings.jeecg.serviceSiteRootUrl, params);
-
 const USER_EXPORT_SERVICE_URL = appSettings.jeecg.serviceSiteRootUrl + "/sys/user/exportXls";
 const USER_IMPORT_SERVICE_URL = appSettings.jeecg.serviceSiteRootUrl + "/sys/user/importExcel";
 
 
 //角色
 const ROLE_ALL_LIST_SERVICE = (params) => getAction("/sys/role/queryall", appSettings.jeecg.serviceSiteRootUrl, params);
-
+const ROLE_LIST_SERVICE = (params) => getAction("/sys/role/list", appSettings.jeecg.serviceSiteRootUrl, params);
+const ROLE_ADD_SERVICE = (params) => postAction("/sys/role/add", appSettings.jeecg.serviceSiteRootUrl, params);
+const ROLE_EDIT_SERVICE = (params) => putAction("/sys/role/edit", appSettings.jeecg.serviceSiteRootUrl, params);
+const ROLE_QUERY_SERVICE = (params) => getAction("/sys/role/queryById", appSettings.jeecg.serviceSiteRootUrl, params);
+const ROLE_DELETE_SERVICE = (params) => deleteAction("/sys/role/delete", appSettings.jeecg.serviceSiteRootUrl, params);
+const ROLE_DELETE_BATCH_SERVICE = (params) => deleteAction("/sys/role/deleteBatch", appSettings.jeecg.serviceSiteRootUrl, params);
+const ROLE_EXPORT_SERVICE_URL = appSettings.jeecg.serviceSiteRootUrl + "/sys/role/exportXls";
+const ROLE_IMPORT_SERVICE_URL = appSettings.jeecg.serviceSiteRootUrl + "/sys/role/importExcel";
 
 //职务
 const POSITION_ALL_LIST_SERVICE = (params) => getAction("/sys/position/queryall", appSettings.jeecg.serviceSiteRootUrl, params);
+
+//部门
+const DEPART_TREE_LIST_SERVICE = (params) => getAction("/sys/sysDepart/queryTreeList", appSettings.jeecg.serviceSiteRootUrl, params);
+
 
 //重复校验
 const DUPLICATE_CHECK_SERVICE = (params) => getAction("/sys/duplicate/check", appSettings.jeecg.serviceSiteRootUrl, params);
@@ -60,21 +69,32 @@ export {
     USER_ADD_SERVICE,
     USER_EDIT_SERVICE,
     USER_ROLE_LIST_SERVICE,
+    USER_QUERY_SERVICE,
     USER_DEPART_LIST_SERVICE,
     USER_ONLY_SERVICE,
     USER_CHANGE_PASSWORD_SERVICE,
     USER_BATCH_SERVICE,
     USER_DELETE_SERVICE,
     USER_DELETE_BATCH_SERVICE,
-    USER_EXCEL_EXPORT_SERVICE,
-    USER_EXCEL_IMPORT_SERVICE,
     USER_EXPORT_SERVICE_URL,
     USER_IMPORT_SERVICE_URL,
 
     ROLE_ALL_LIST_SERVICE,
+    ROLE_LIST_SERVICE,
+    ROLE_ADD_SERVICE,
+    ROLE_QUERY_SERVICE,
+    ROLE_EDIT_SERVICE,
+    ROLE_DELETE_SERVICE,
+    ROLE_DELETE_BATCH_SERVICE,
+    ROLE_EXPORT_SERVICE_URL,
+    ROLE_IMPORT_SERVICE_URL,
 
+
+
+
+
+    DEPART_TREE_LIST_SERVICE,
     POSITION_ALL_LIST_SERVICE,
-
     DUPLICATE_CHECK_SERVICE,
 
     FILE_UPLOAD_SERVICE_URL,

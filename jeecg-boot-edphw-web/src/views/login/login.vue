@@ -35,7 +35,7 @@
             return {
                 formInline: {
                     user: "admin",
-                    password: "123456",
+                    password: "Yue792069154!",
                     captcha: ""
                 }
             }
@@ -47,10 +47,11 @@
             handleSubmit: function () {
 
                 let checkParams = this.$refs.verificationCode.getLoginParam();
+                this.formInline.captcha=checkParams.checkCode;
                 if (checkParams.checkCode.toLowerCase() === this.formInline.captcha.toLowerCase()) {
                     var loginInfo = {
-                        username: "admin",
-                        password: "123456",
+                        username: this.formInline.user,
+                        password: this.formInline.password,
                         captcha: checkParams.checkCode,
                         checkKey: checkParams.checkKey
                     };
