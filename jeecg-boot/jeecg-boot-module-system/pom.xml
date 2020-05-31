@@ -37,7 +37,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.jeecgframework.boot</groupId>
-			<artifactId>jeecg-boot-module-psp</artifactId>
+			<artifactId>jeecg-boot-modules-cable</artifactId>
 			<version>1.0.0</version>
 		</dependency>
 	</dependencies>

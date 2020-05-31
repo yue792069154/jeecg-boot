@@ -36,11 +36,11 @@ public class JwtUtil {
 	 * @param secret 用户的密码
 	 * @return 是否正确
 	 */
-	public static boolean verify(String token, String username, String secret) {
+	public static boolean verify(String token, String userName, String secret) {
 		try {
 			// 根据密码生成JWT效验器
 			Algorithm algorithm = Algorithm.HMAC256(secret);
-			JWTVerifier verifier = JWT.require(algorithm).withClaim("username", username).build();
+			JWTVerifier verifier = JWT.require(algorithm).withClaim("userName", userName).build();
 			// 效验TOKEN
 			DecodedJWT jwt = verifier.verify(token);
 			return true;
@@ -54,10 +54,10 @@ public class JwtUtil {
 	 *
 	 * @return token中包含的用户名
 	 */
-	public static String getUsername(String token) {
+	public static String getUserName(String token) {
 		try {
 			DecodedJWT jwt = JWT.decode(token);
-			return jwt.getClaim("username").asString();
+			return jwt.getClaim("userName").asString();
 		} catch (JWTDecodeException e) {
 			return null;
 		}
@@ -66,15 +66,15 @@ public class JwtUtil {
 	/**
 	 * 生成签名,5min后过期
 	 *
-	 * @param username 用户名
+	 * @param userName 用户名
 	 * @param secret   用户的密码
 	 * @return 加密的token
 	 */
-	public static String sign(String username, String secret) {
+	public static String sign(String userName, String secret) {
 		Date date = new Date(System.currentTimeMillis() + EXPIRE_TIME);
 		Algorithm algorithm = Algorithm.HMAC256(secret);
 		// 附带username信息
-		return JWT.create().withClaim("username", username).withExpiresAt(date).sign(algorithm);
+		return JWT.create().withClaim("userName", userName).withExpiresAt(date).sign(algorithm);
 
 	}
 
@@ -87,7 +87,7 @@ public class JwtUtil {
 	 */
 	public static String getUserNameByToken(HttpServletRequest request) throws JeecgBootException {
 		String accessToken = request.getHeader("X-Access-Token");
-		String username = getUsername(accessToken);
+		String username = getUserName(accessToken);
 		if (oConvertUtils.isEmpty(username)) {
 			throw new JeecgBootException("未获取到用户");
 		}
@@ -149,7 +149,7 @@ public class JwtUtil {
 		//替换为系统登录用户帐号
 		if (key.equals(DataBaseConstant.SYS_USER_CODE)|| key.equals(DataBaseConstant.SYS_USER_CODE_TABLE)) {
 			if(user==null) {
-				returnValue = sysUser.getUsername();
+				returnValue = sysUser.getUserName();
 			}else {
 				returnValue = user.getSysUserCode();
 			}
@@ -157,7 +157,7 @@ public class JwtUtil {
 		//替换为系统登录用户真实名字
 		else if (key.equals(DataBaseConstant.SYS_USER_NAME)|| key.equals(DataBaseConstant.SYS_USER_NAME_TABLE)) {
 			if(user==null) {
-				returnValue = sysUser.getRealname();
+				returnValue = sysUser.getRealName();
 			}else {
 				returnValue = user.getSysUserName();
 			}
@@ -197,6 +197,6 @@ public class JwtUtil {
 	
 	public static void main(String[] args) {
 		 String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NjUzMzY1MTMsInVzZXJuYW1lIjoiYWRtaW4ifQ.xjhud_tWCNYBOg_aRlMgOdlZoWFFKB_givNElHNw3X0";
-		 System.out.println(JwtUtil.getUsername(token));
+		 System.out.println(JwtUtil.getUserName(token));
 	}
 }

@@ -39,22 +39,22 @@ public class TokenUtils {
         String token = getTokenByRequest(request);
 
         // 解密获得username，用于和数据库进行对比
-        String username = JwtUtil.getUsername(token);
-        if (username == null) {
+        String userName = JwtUtil.getUserName(token);
+        if (userName == null) {
             throw new AuthenticationException("token非法无效!");
         }
 
         // 查询用户信息
-        LoginUser user = sysBaseAPI.getUserByName(username);
+        LoginUser user = sysBaseAPI.getUserByName(userName);
         if (user == null) {
             throw new AuthenticationException("用户不存在!");
         }
         // 判断用户状态
-        if (user.getStatus() != 1) {
-            throw new AuthenticationException("账号已被锁定,请联系管理员!");
+        if (user.getStatusCode() != "1") {
+            throw new AuthenticationException("账号已被注销,请联系管理员!");
         }
         // 校验token是否超时失效 & 或者账号密码是否错误
-        if (!jwtTokenRefresh(token, username, user.getPassword(), redisUtil)) {
+        if (!jwtTokenRefresh(token, userName, user.getPassword(), redisUtil)) {
             throw new AuthenticationException("Token失效，请重新登录!");
         }
         return true;

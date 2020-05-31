@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.system.sysMenu.mapper.SysMenuMapper">
+
+    <select id="getMenuListByUserName" parameterType="Object" resultType="org.jeecg.modules.system.sysMenu.entity.SysMenu">
+		   SELECT p.*
+		   FROM  sys_menu p
+		   WHERE exists(
+		   		select a.id from sys_role_menu a
+		   		join sys_role b on a.role_id = b.id
+		   		join sys_user_role c on c.role_id = b.id
+		   		join sys_user d on d.id = c.user_id
+		   		where p.id = a.menu_id AND d.user_name = #{userName}
+		   )
+		   and p.status_code = 0
+		   order by p.sort ASC
+	</select>
+
+</mapper>

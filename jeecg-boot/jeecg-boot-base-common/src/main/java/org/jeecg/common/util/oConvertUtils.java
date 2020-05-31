@@ -26,11 +26,6 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
-/**
- * 
- * @Author  张代浩
- *
- */
 @Slf4j
 public class oConvertUtils {
 	public static boolean isEmpty(Object object) {

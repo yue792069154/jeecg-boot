@@ -10,12 +10,7 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-/**
- * Spring Boot 2.0 解决跨域问题
- * 
- * @Author qinfeng
- *
- */
+
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
@@ -60,4 +55,5 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 	public void addViewControllers(ViewControllerRegistry registry) {
 		registry.addViewController("/").setViewName("doc.html");
 	}
+
 }

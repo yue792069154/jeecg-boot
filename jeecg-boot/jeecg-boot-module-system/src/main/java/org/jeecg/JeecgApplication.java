@@ -1,18 +1,12 @@
 package org.jeecg;
 
+import java.io.IOException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
-
-import org.apache.catalina.Context;
-import org.apache.tomcat.util.scan.StandardJarScanner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
-
 import lombok.extern.slf4j.Slf4j;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
@@ -22,8 +16,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableAutoConfiguration
 public class JeecgApplication {
 
-  public static void main(String[] args) throws UnknownHostException {
-    //System.setProperty("spring.devtools.restart.enabled", "true");
+  public static void main(String[] args) throws IOException {
 
         ConfigurableApplicationContext application = SpringApplication.run(JeecgApplication.class, args);
         Environment env = application.getEnvironment();
@@ -37,5 +30,5 @@ public class JeecgApplication {
                 "swagger-ui: \t\thttp://" + ip + ":" + port + path + "/doc.html\n" +
                 "----------------------------------------------------------");
 
-    }
+  }
 }

@@ -77,30 +77,30 @@ public interface CommonConstant {
     public static final String PREFIX_USER_TOKEN  = "prefix_user_token_";
     /** Token缓存时间：3600秒即一小时 */
     public static final int  TOKEN_EXPIRE_TIME  = 3600;
-    
+
 
     /**
      *  0：一级菜单
      */
     public static final Integer MENU_TYPE_0  = 0;
    /**
-    *  1：子菜单 
+    *  1：子菜单
     */
     public static final Integer MENU_TYPE_1  = 1;
     /**
      *  2：按钮权限
      */
     public static final Integer MENU_TYPE_2  = 2;
-    
+
     /**通告对象类型（USER:指定用户，ALL:全体用户）*/
     public static final String MSG_TYPE_UESR  = "USER";
     public static final String MSG_TYPE_ALL  = "ALL";
-    
+
     /**发布状态（0未发布，1已发布，2已撤销）*/
     public static final String NO_SEND  = "0";
     public static final String HAS_SEND  = "1";
     public static final String HAS_CANCLE  = "2";
-    
+
     /**阅读状态（0未读，1已读）*/
     public static final String HAS_READ_FLAG  = "1";
     public static final String NO_READ_FLAG  = "0";
@@ -116,19 +116,19 @@ public interface CommonConstant {
     public static final String SMS_TPL_TYPE_0  = "0";
     public static final String SMS_TPL_TYPE_1  = "1";
     public static final String SMS_TPL_TYPE_2  = "2";
-    
+
     /**
      * 状态(0无效1有效)
      */
     public static final String STATUS_0 = "0";
     public static final String STATUS_1 = "1";
-    
+
     /**
      * 同步工作流引擎1同步0不同步
      */
     public static final String ACT_SYNC_0 = "0";
     public static final String ACT_SYNC_1 = "1";
-    
+
     /**
      * 消息类型1:通知公告2:系统消息
      */
@@ -146,7 +146,7 @@ public interface CommonConstant {
      */
     public static final Integer USER_UNFREEZE = 1;
     public static final Integer USER_FREEZE = 2;
-    
+
     /**字典翻译文本后缀*/
     public static final String DICT_TEXT_SUFFIX = "_dictText";
 

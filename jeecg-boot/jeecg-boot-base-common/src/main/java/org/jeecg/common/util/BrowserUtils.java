@@ -7,11 +7,7 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
-/**
- * 
- * @Author 张代浩
- * 
- */
+
 public class BrowserUtils {
 	
 	// 判断是否是IE

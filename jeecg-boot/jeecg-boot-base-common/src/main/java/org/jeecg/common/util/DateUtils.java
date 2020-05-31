@@ -11,14 +11,7 @@ import java.util.GregorianCalendar;
 
 import org.springframework.util.StringUtils;
 
-/**
- * 
- * 类描述：时间操作定义类
- * 
- * @Author: 张代浩
- * @Date:2012-12-8 12:15:03
- * @Version 1.0
- */
+
 public class DateUtils extends PropertyEditorSupport {
 	// 各种时间格式
 	public static final SimpleDateFormat date_sdf = new SimpleDateFormat("yyyy-MM-dd");

@@ -14,9 +14,8 @@ import org.apache.ibatis.plugin.Invocation;
 import org.apache.ibatis.plugin.Plugin;
 import org.apache.ibatis.plugin.Signature;
 import org.apache.shiro.SecurityUtils;
-import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
-import org.jeecg.modules.system.entity.SysUser;
+import org.jeecg.modules.system.sysUser.entity.SysUser;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +44,7 @@ public class MybatisInterceptor implements Interceptor {
 			return invocation.proceed();
 		}
 		if (SqlCommandType.INSERT == sqlCommandType) {
-			LoginUser sysUser = this.getLoginUser();
+			SysUser sysUser = this.getLoginUser();
 			Field[] fields = oConvertUtils.getAllFields(parameter);
 			for (Field field : fields) {
 				log.debug("------field.name------" + field.getName());
@@ -58,7 +57,7 @@ public class MybatisInterceptor implements Interceptor {
 							if (sysUser != null) {
 								// 登录人账号
 								field.setAccessible(true);
-								field.set(parameter, sysUser.getUsername());
+								field.set(parameter, sysUser.getUserName());
 								field.setAccessible(false);
 							}
 						}
@@ -93,7 +92,7 @@ public class MybatisInterceptor implements Interceptor {
 			}
 		}
 		if (SqlCommandType.UPDATE == sqlCommandType) {
-			LoginUser sysUser = this.getLoginUser();
+			SysUser sysUser = this.getLoginUser();
 			Field[] fields = null;
 			if (parameter instanceof ParamMap) {
 				ParamMap<?> p = (ParamMap<?>) parameter;
@@ -124,7 +123,7 @@ public class MybatisInterceptor implements Interceptor {
 						if (sysUser != null) {
 							// 登录账号
 							field.setAccessible(true);
-							field.set(parameter, sysUser.getUsername());
+							field.set(parameter, sysUser.getUserName());
 							field.setAccessible(false);
 						}
 					}
@@ -152,10 +151,10 @@ public class MybatisInterceptor implements Interceptor {
 	}
 
 	//update-begin--Author:scott  Date:20191213 for：关于使用Quzrtz 开启线程任务， #465
-	private LoginUser getLoginUser() {
-		LoginUser sysUser = null;
+	private SysUser getLoginUser() {
+		SysUser sysUser = null;
 		try {
-			sysUser = SecurityUtils.getSubject().getPrincipal() != null ? (LoginUser) SecurityUtils.getSubject().getPrincipal() : null;
+			sysUser = SecurityUtils.getSubject().getPrincipal() != null ? (SysUser) SecurityUtils.getSubject().getPrincipal() : null;
 		} catch (Exception e) {
 			//e.printStackTrace();
 			sysUser = null;

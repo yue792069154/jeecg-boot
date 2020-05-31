@@ -37,26 +37,6 @@ public class RedisConfig extends CachingConfigurerSupport {
 	@Resource
 	private LettuceConnectionFactory lettuceConnectionFactory;
 
-//	/**
-//	 * @description 自定义的缓存key的生成策略 若想使用这个key
-//	 *              只需要讲注解上keyGenerator的值设置为keyGenerator即可</br>
-//	 * @return 自定义策略生成的key
-//	 */
-//	@Override
-//	@Bean
-//	public KeyGenerator keyGenerator() {
-//		return new KeyGenerator() {
-//			@Override
-//			public Object generate(Object target, Method method, Object... params) {
-//				StringBuilder sb = new StringBuilder();
-//				sb.append(target.getClass().getName());
-//				sb.append(method.getDeclaringClass().getName());
-//				Arrays.stream(params).map(Object::toString).forEach(sb::append);
-//				return sb.toString();
-//			}
-//		};
-//	}
-
 	/**
 	 * RedisTemplate配置
 	 *
