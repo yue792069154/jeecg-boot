@@ -3,6 +3,9 @@ package org.jeecg.modules.system.dict.controller;
 import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import io.netty.util.internal.StringUtil;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.modules.system.sysDict.entity.SysDictType;
@@ -36,21 +39,27 @@ public class SysDictTypeController extends JeecgController<SysDictType, ISysDict
 	/**
 	 * 分页列表查询
 	 *
-	 * @param sysDictType
+	 * @param httpServletRequest
 	 * @param pageNo
 	 * @param pageSize
 	 * @return
 	 */
 	@AutoLog(value = "字典类型-分页列表查询")
 	@ApiOperation(value="字典类型-分页列表查询", notes="字典类型-分页列表查询")
-	@PostMapping(value = "/list")
-	public Result<?> queryPageList(@RequestBody  SysDictType sysDictType ,
+	@GetMapping(value = "/list")
+	public Result<?> queryPageList(HttpServletRequest httpServletRequest,
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize) {
-		QueryWrapper<SysDictType> queryWrapper = new QueryWrapper<>();
-		queryWrapper.ne("status_code",1)
-				.and(wrapper -> wrapper.like("dict_type_name",sysDictType.getDictTypeName()).or().like("dict_type_code",sysDictType.getDictTypeCode()))
-		.orderByAsc("sort");
+
+		String keyword=httpServletRequest.getParameter("keyword");
+		String statusCode=httpServletRequest.getParameter("statusCode");
+		QueryWrapper<SysDictType> queryWrapper =new QueryWrapper<>();
+		queryWrapper
+				.like(!StringUtil.isNullOrEmpty(keyword),"dict_type_name",keyword)
+				.or()
+				.like(!StringUtil.isNullOrEmpty(keyword),"dict_type_code",keyword)
+				.eq(!StringUtil.isNullOrEmpty(statusCode),"status_code",statusCode)
+				.orderByAsc("sort");
 		Page<SysDictType> page = new Page<SysDictType>(pageNo, pageSize);
 		IPage<SysDictType> pageList = sysDictTypeService.page(page, queryWrapper);
 		return Result.ok(pageList);
@@ -111,6 +120,29 @@ public class SysDictTypeController extends JeecgController<SysDictType, ISysDict
 		this.sysDictTypeService.removeByIds(Arrays.asList(ids.split(",")));
 		return Result.ok("批量删除成功！");
 	}
+
+	 /**
+	  * 启用&停用
+	  * @param ids
+	  * @return
+	  */
+	 @GetMapping(value = "/frozenBatch")
+	 public Result<SysDictType> frozenBatch(@RequestParam(name="ids",required=true) String ids,@RequestParam(name="statusCode",required=true) String statusCode) {
+		 Result<SysDictType> result = new Result<SysDictType>();
+		 String [] idList = ids.split(",");
+		 try {
+			 for (String id : idList) {
+				 this.sysDictTypeService.update(new SysDictType().setStatusCode(statusCode),
+						 new UpdateWrapper<SysDictType>().lambda().eq(SysDictType::getId,id));
+			 }
+		 } catch (Exception e) {
+			 log.error(e.getMessage(), e);
+			 result.error500("操作失败"+e.getMessage());
+		 }
+		 result.success("操作成功!");
+		 return result;
+
+	 }
 	
 	/**
 	 * 通过id查询

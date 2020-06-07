@@ -17,6 +17,11 @@
                 </Option>
             </Select>
         </FormItem>
+
+        <FormItem label="路由地址" prop="menuRouteContent">
+            <Input placeholder="请输入路由地址" v-model="modelForm.menuRouteContent" clearable />
+        </FormItem>
+
         <FormItem label="菜单协议内容" prop="menuEntryProtContent">
             <Input placeholder="请输入菜单协议内容" type="textarea" :rows="6" v-model="modelForm.menuEntryProtContent"
                 clearable />
@@ -41,11 +46,10 @@
     import Vue from 'vue';
     import _ from 'lodash';
     import {
-        MENU_LIST_SERVICE,
-        DICT_LIST_BY_DICT_TYPE_CODE_SERVICE,
         MENU_QUERY_SERVICE,
         MENU_ADD_SERVICE,
-        MENU_EDIT_SERVICE
+        MENU_EDIT_SERVICE,
+        DICT_LIST_BY_DICT_TYPE_CODE_SERVICE,
     } from "../../axios/api";
     import {
         Poptip
@@ -54,12 +58,10 @@
         ACCESS_TOKEN
     } from '../../store/mutations';
 
-    import Treeselect from '@riophae/vue-treeselect';
-    import '@riophae/vue-treeselect/dist/vue-treeselect.css';
     import fontIconSelect from '../../components/font-icon-select';
     export default {
+        name: "menuSave",
         components: {
-            Treeselect,
             fontIconSelect
         },
         props: {
@@ -82,6 +84,7 @@
                     menuEntryProtCode: null,
                     menuEntryProtContent: null,
                     menuOpenTypeCode: null,
+                    menuRouteContent: null,
                     sort: 1
                 },
                 modelFormRule: {
@@ -94,21 +97,6 @@
                         required: true,
                         message: '请输入菜单编码',
                         trigger: 'change,blur'
-                    }],
-                    menuEntryProtCode: [{
-                        required: true,
-                        message: '请选择菜单入口协议',
-                        trigger: 'blur'
-                    }],
-                    menuEntryProtContent: [{
-                        required: true,
-                        message: '请输入菜单入口协议内容',
-                        trigger: 'change,blur'
-                    }],
-                    menuOpenTypeCode: [{
-                        required: true,
-                        message: '请选择菜单打开方式',
-                        trigger: 'blur'
                     }]
                 },
 
@@ -121,15 +109,9 @@
 
             }
         },
-        watch: {
-            id(newValue, oldValue) {
-                this.getMenu(newValue);
-            }
-        },
         mounted() {
-
             this.getDict();
-
+            this.getMenu();
         },
         methods: {
             getMenu() {
@@ -142,13 +124,11 @@
                     MENU_QUERY_SERVICE({
                         id: id
                     }).then(response => {
-
                         if (response.success) {
                             var result = response.result;
                             if (!_.isNil(result)) {
-
-                                for (var item in this.modelForm) {
-                                    this.modelForm[item] = result[item];
+                                for (var item in vm.modelForm) {
+                                    vm.modelForm[item] = result[item];
                                 };
                             };
                         }

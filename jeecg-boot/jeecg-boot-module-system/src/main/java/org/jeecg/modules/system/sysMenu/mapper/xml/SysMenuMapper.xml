@@ -12,7 +12,7 @@
 		   		join sys_user d on d.id = c.user_id
 		   		where p.id = a.menu_id AND d.user_name = #{userName}
 		   )
-		   and p.status_code = 0
+		   and p.status_code = 0 and p.delete_code = 0
 		   order by p.sort ASC
 	</select>
 

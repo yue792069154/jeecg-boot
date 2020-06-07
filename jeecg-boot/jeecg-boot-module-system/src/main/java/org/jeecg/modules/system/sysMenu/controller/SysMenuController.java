@@ -4,6 +4,9 @@ import java.util.Arrays;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import io.netty.util.internal.StringUtil;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.util.JwtUtil;
@@ -40,13 +43,16 @@ public class SysMenuController extends JeecgController<SysMenu, ISysMenuService>
 	 */
 	@AutoLog(value = "菜单-分页列表查询")
 	@ApiOperation(value="菜单-分页列表查询", notes="菜单-分页列表查询")
-	@PostMapping(value = "/list")
-	public Result<?> queryPageList(@RequestBody SysMenu sysMenu,
+	@GetMapping(value = "/list")
+	public Result<?> queryPageList(HttpServletRequest httpServletRequest,
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize) {
+		String keyword=httpServletRequest.getParameter("keyword");
+		String statusCode=httpServletRequest.getParameter("statusCode");
 		QueryWrapper<SysMenu> queryWrapper = new QueryWrapper<>();
-		queryWrapper.ne("status_code",1)
-				.and(wrapper -> wrapper.like("menu_name",sysMenu.getMenuName()))
+		queryWrapper
+				.like(!StringUtil.isNullOrEmpty(keyword),"menu_name",keyword)
+				.eq(!StringUtil.isNullOrEmpty(statusCode),"status_code",statusCode)
 				.orderByAsc("sort");
 		Page<SysMenu> page = new Page<SysMenu>(pageNo, pageSize);
 		IPage<SysMenu> pageList = sysMenuService.page(page, queryWrapper);
@@ -64,8 +70,9 @@ public class SysMenuController extends JeecgController<SysMenu, ISysMenuService>
 	@PostMapping(value = "/queryall")
 	public Result<?> queryList(@RequestBody SysMenu sysMenu) {
 		QueryWrapper<SysMenu> queryWrapper = new QueryWrapper<>();
-		queryWrapper.ne("status_code",1)
-				.and(wrapper -> wrapper.like("menu_name",sysMenu.getMenuName()))
+		queryWrapper
+				.like(!StringUtil.isNullOrEmpty(sysMenu.getKeyword()),"menu_name",sysMenu.getKeyword())
+				.eq(!StringUtil.isNullOrEmpty(sysMenu.getStatusCode()),"status_code",sysMenu.getStatusCode())
 				.orderByAsc("sort");
 		List<SysMenu> sysMenuList = sysMenuService.list(queryWrapper);
 		return Result.ok(sysMenuList);
@@ -152,7 +159,32 @@ public class SysMenuController extends JeecgController<SysMenu, ISysMenuService>
 		this.sysMenuService.removeByIds(Arrays.asList(ids.split(",")));
 		return Result.ok("批量删除成功！");
 	}
-	
+
+
+
+	/**
+	 * 启用&停用菜单
+	 * @param ids
+	 * @return
+	 */
+	@GetMapping(value = "/frozenBatch")
+	public Result<SysMenu> frozenBatch(@RequestParam(name="ids",required=true) String ids,@RequestParam(name="statusCode",required=true) String statusCode) {
+		Result<SysMenu> result = new Result<SysMenu>();
+		String [] idList = ids.split(",");
+		try {
+			for (String id : idList) {
+				this.sysMenuService.update(new SysMenu().setStatusCode(statusCode),
+						new UpdateWrapper<SysMenu>().lambda().eq(SysMenu::getId,id));
+			}
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			result.error500("操作失败"+e.getMessage());
+		}
+		result.success("操作成功!");
+		return result;
+
+	}
+
 	/**
 	 * 通过id查询
 	 *

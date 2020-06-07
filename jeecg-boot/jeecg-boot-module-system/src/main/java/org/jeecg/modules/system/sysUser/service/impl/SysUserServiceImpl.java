@@ -128,8 +128,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     @Override
-    public List<SysUser> queryList() {
-        List<SysUser> sysUserList=sysUserMapper.queryList();
+    public List<SysUser> queryList(SysUser sysUser) {
+        List<SysUser> sysUserList=sysUserMapper.queryList(sysUser);
         return  sysUserList;
     }
 }

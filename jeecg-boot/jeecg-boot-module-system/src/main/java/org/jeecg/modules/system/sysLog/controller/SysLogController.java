@@ -5,16 +5,14 @@ import java.util.Arrays;
 
 import javax.servlet.http.HttpServletRequest;
 
+import io.netty.util.internal.StringUtil;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.sysLog.entity.SysLog;
 import org.jeecg.modules.system.sysLog.service.ISysLogService;
 import org.jeecg.modules.system.sysRole.entity.SysRole;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -36,32 +34,20 @@ public class SysLogController {
 	 * @param syslog
 	 * @param pageNo
 	 * @param pageSize
-	 * @param req
 	 * @return
 	 */
-	@RequestMapping(value = "/list", method = RequestMethod.GET)
-	public Result<IPage<SysLog>> queryPageList(SysLog syslog,@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
-									  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,HttpServletRequest req) {
-		Result<IPage<SysLog>> result = new Result<IPage<SysLog>>();
+	@GetMapping(value = "/list")
+	public Result<?> queryPageList(HttpServletRequest httpServletRequest,
+											   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+											   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize) {
+
 		QueryWrapper<SysLog> queryWrapper = new QueryWrapper<>();
+		String keyword=httpServletRequest.getParameter("keyword");
+		queryWrapper.like(!StringUtil.isNullOrEmpty(keyword),"log_content",keyword);
 		Page<SysLog> page = new Page<SysLog>(pageNo, pageSize);
-		//日志关键词
-		String keyWord = req.getParameter("keyWord");
-		if(oConvertUtils.isNotEmpty(keyWord)) {
-			queryWrapper.like("log_content",keyWord);
-		}
-		//TODO 过滤逻辑处理
-		//TODO begin、end逻辑处理
-		//TODO 一个强大的功能，前端传一个字段字符串，后台只返回这些字符串对应的字段
-		//创建时间/创建人的赋值
 		IPage<SysLog> pageList = sysLogService.page(page, queryWrapper);
-		log.info("查询当前页："+pageList.getCurrent());
-		log.info("查询当前页数量："+pageList.getSize());
-		log.info("查询结果数量："+pageList.getRecords().size());
-		log.info("数据总数："+pageList.getTotal());
-		result.setSuccess(true);
-		result.setResult(pageList);
-		return result;
+		return Result.ok(pageList);
+
 	}
 	
 	/**

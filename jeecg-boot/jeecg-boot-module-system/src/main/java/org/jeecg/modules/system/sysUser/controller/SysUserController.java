@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import io.netty.util.internal.StringUtil;
+import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.util.PasswordUtil;
@@ -38,21 +39,32 @@ public class SysUserController extends JeecgController<SysUser, ISysUserService>
 	/**
 	 * 分页列表查询
 	 *
-	 * @param sysUser
+	 * @param httpServletRequest
 	 * @param pageNo
 	 * @param pageSize
 	 * @return
 	 */
 	@AutoLog(value = "用户-分页列表查询")
 	@ApiOperation(value="用户-分页列表查询", notes="用户-分页列表查询")
-	@PostMapping(value = "/list")
-	public Result<?> queryPageList(@RequestBody SysUser sysUser,
+	@GetMapping(value = "/list")
+	public Result<?> queryPageList(HttpServletRequest httpServletRequest,
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize) {
 
+		String keyword=httpServletRequest.getParameter("keyword");
+		String statusCode=httpServletRequest.getParameter("statusCode");
+
 		QueryWrapper<SysUser> queryWrapper =new QueryWrapper<>();
-		queryWrapper.and(wrapper -> wrapper.like("user_name",sysUser.getUserName()))
-		.or().eq(!StringUtil.isNullOrEmpty(sysUser.getStatusCode()),"status_code",sysUser.getStatusCode());
+		queryWrapper
+				.like(!StringUtil.isNullOrEmpty(keyword),"real_name",keyword)
+				.or()
+				.like(!StringUtil.isNullOrEmpty(keyword),"user_name",keyword)
+				.or()
+				.like(!StringUtil.isNullOrEmpty(keyword),"phone",keyword)
+				.or()
+				.like(!StringUtil.isNullOrEmpty(keyword),"email",keyword)
+				.eq(!StringUtil.isNullOrEmpty(statusCode),"status_code",statusCode);
+
 		Page<SysUser> page = new Page<SysUser>(pageNo, pageSize);
 		IPage<SysUser> pageList = sysUserService.page(page, queryWrapper);
 		return Result.ok(pageList);
@@ -68,7 +80,7 @@ public class SysUserController extends JeecgController<SysUser, ISysUserService>
 	@ApiOperation(value="用户-列表查询", notes="用户-列表查询")
 	@PostMapping(value = "/queryall")
 	public Result<?> queryList(@RequestBody SysUser sysUser) {
-		return Result.ok(sysUserService.queryList());
+		return Result.ok(sysUserService.queryList(sysUser));
 	}
 
 	
@@ -91,7 +103,6 @@ public class SysUserController extends JeecgController<SysUser, ISysUserService>
 			sysUser.setSalt(salt);
 			String passwordEncode = PasswordUtil.encrypt(sysUser.getUserName(), sysUser.getPassword(), salt);
 			sysUser.setPassword(passwordEncode);
-			sysUser.setStatusCode("0");
 			Boolean saveStatus=sysUserService.save(sysUser);
 			if (saveStatus){
 				sysUserService.addUserRoleAndOrg(sysUser);
@@ -167,17 +178,17 @@ public class SysUserController extends JeecgController<SysUser, ISysUserService>
 
 	 /**
 	  * 冻结&解冻用户
-	  * @param sysUserList
+	  * @param ids
 	  * @return
 	  */
-	 @RequestMapping(value = "/frozenBatch", method = RequestMethod.PUT)
-	 public Result<SysUser> frozenBatch(@RequestBody List<SysUser> sysUserList,@RequestParam(name="statusCode",required=true) String statusCode) {
+	 @GetMapping(value = "/frozenBatch")
+	 public Result<SysUser> frozenBatch(@RequestParam(name="ids",required=true) String ids,@RequestParam(name="statusCode",required=true) String statusCode) {
 		 Result<SysUser> result = new Result<SysUser>();
+		 String [] idList = ids.split(",");
 		 try {
-
-			 for (SysUser sysUser : sysUserList) {
+			 for (String id : idList) {
 				 this.sysUserService.update(new SysUser().setStatusCode(statusCode),
-						 new UpdateWrapper<SysUser>().lambda().eq(SysUser::getId,sysUser.getId()));
+						 new UpdateWrapper<SysUser>().lambda().eq(SysUser::getId,id));
 			 }
 		 } catch (Exception e) {
 			 log.error(e.getMessage(), e);

@@ -1,5 +1,5 @@
 <template>
-    <table-pannel ref="tablePannel" @on-ok="onOk" @on-cancel="onCancel">
+    <table-pannel ref="tablePannel" @on-ok="onOk" @on-cancel="onCancel"  :show-ok-button="showOkButton">
         <slot slot="alert">
             <Alert show-icon>字典管理，支持EXCEL导入、导出、添加字典、删除字典等功能</Alert>
         </slot>
@@ -7,7 +7,17 @@
             <table>
                 <tr>
                     <td>
-                        <Input suffix="ios-search" @on-change="onSearch" v-model="modelTable.filter.dictTypeName"
+                        <Select clearable @on-change="onSearch" v-model="modelTable.filter.statusCode"
+                            placeholder="请选择字典类型状态" style="width:140px">
+                            <Option value="0">正常</Option>
+                            <Option value="1">停用</Option>
+                        </Select>
+                    </td>
+                    <td>
+                        <Divider type="vertical" />
+                    </td>
+                    <td>
+                        <Input suffix="ios-search" @on-change="onSearch" v-model="modelTable.filter.keyword"
                             placeholder="请输入关键字查询" style="width: auto" />
                     </td>
                 </tr>
@@ -18,16 +28,7 @@
             <table>
                 <tr>
                     <td>
-                        <Button type="text" icon="ios-cloud-upload" @click="onExportUserXls">导出</Button>
-                    </td>
-                    <td>
-                        <Upload :show-upload-list="false" :headers="fileUploadHeaders" :action="importServiceUrl"
-                            :on-success="onImportUserXls" :format="['xls','xlsx']">
-                            <Button type="text" icon="ios-cloud-download">导入</Button>
-                        </Upload>
-                    </td>
-                    <td>
-                        <Button type="primary" @click="onAddDictType">添加字典</Button>
+                        <Button type="primary" @click="onAddDictType">添加字典类型</Button>
                     </td>
                     <td>
                         <Poptip transfer confirm title="确定删除吗？" @on-ok="onDeleteBatchDictType">
@@ -50,8 +51,8 @@
                 <vxe-table-column field="extendTableChineseName" title="扩展表中文名"></vxe-table-column>
                 <vxe-table-column field="statusCode" width="80" title="状态" align="center">
                     <template v-slot="{ row }">
-                        <Tag v-if="row.statusCode==0" color="success">正常</Tag>
-                        <Tag v-if="row.statusCode==-1" color="warning">停用</Tag>
+                        <Tag v-if="row.statusCode=='0'" color="success">正常</Tag>
+                        <Tag v-if="row.statusCode=='1'" color="warning">停用</Tag>
                     </template>
                 </vxe-table-column>
                 <vxe-table-column field="sort" title="顺序" align="right"></vxe-table-column>
@@ -73,7 +74,17 @@
                             <DropdownMenu slot="list">
                                 <div>
                                     <Poptip transfer confirm title="确定删除吗？" @on-ok="onDeleteDictType(row)">
-                                        <DropdownItem>删除字典</DropdownItem>
+                                        <DropdownItem>删除字典类型</DropdownItem>
+                                    </Poptip>
+                                </div>
+                                <div>
+                                    <Poptip v-if="row.statusCode=='0'" transfer confirm title="确定停用吗？"
+                                        @on-ok="onBatchDictType(row)">
+                                        <DropdownItem>停用字典类型</DropdownItem>
+                                    </Poptip>
+                                    <Poptip v-if="row.statusCode=='1'" transfer confirm title="确定启用吗？"
+                                        @on-ok="onBatchDictType(row)">
+                                        <DropdownItem>启用字典类型</DropdownItem>
                                     </Poptip>
                                 </div>
                             </DropdownMenu>
@@ -88,10 +99,8 @@
                 @on-page-size-change="onPageSizeChange" show-total show-sizer show-elevator />
         </slot>
         <slot slot="drawer">
-            <dict-Type-save v-show="ref=='dictTypeSave'" ref="dictTypeSave" @on-save-error="onSaveError"
-                @on-save-success="onSaveSuccess" :id="modelForm.id">
-            </dict-Type-save>
-            <dict-list v-show="ref=='dictList'" ref="dictList" :id="modelForm.id"></dict-list>
+            <component ref="drawerComponent" :key="currentComponentKey" :is="currentComponent"
+                @on-save-error="onSaveError" @on-save-success="onSaveSuccess" :id="modelForm.id"></component>
         </slot>
     </table-pannel>
 </template>
@@ -101,22 +110,13 @@
     import tablePannel from '../../components/table-pannel';
     import {
         DICT_TYPT_LIST_SERVICE,
-        DICT_TYPT_BATCH_SERVICE,
         DICT_TYPT_DELETE_SERVICE,
         DICT_TYPT_DELETE_BATCH_SERVICE,
-        DICT_TYPT_EXPORT_SERVICE_URL,
-        DICT_TYPT_IMPORT_SERVICE_URL,
-        DUPLICATE_CHECK_SERVICE
+        DICT_TYPT_BATCH_SERVICE
     } from "../../axios/api";
     import {
         Poptip
     } from 'view-design';
-    import {
-        ACCESS_TOKEN
-    } from '../../store/mutations';
-    import {
-        ExcelMixins
-    } from '../../mixins/mixins';
     import dictTypeSave from './sysDictTypeSave'
     import dictList from './sysDictList';
     export default {
@@ -125,7 +125,6 @@
             dictTypeSave,
             dictList
         },
-        mixins: [ExcelMixins],
         data() {
             return {
 
@@ -141,24 +140,20 @@
                     },
                     select: [],
                     filter: {
-                        dictTypeName: ""
+                        statusCode: "",
+                        keyword: ""
                     },
                     loading: false
                 },
 
-                fileUploadHeaders: {},
-                importServiceUrl: DICT_TYPT_IMPORT_SERVICE_URL,
+                currentComponent: "",
+                currentComponentKey: "",
 
-                ref: ""
+                showOkButton:false
 
             }
         },
         mounted() {
-
-            this.fileUploadHeaders = {
-                "X-Access-Token": Vue.ls.get(ACCESS_TOKEN)
-            };
-
             this.getDictTypeList();
         },
         methods: {
@@ -168,70 +163,82 @@
             },
             getDictTypeList() {
 
+                var vm = this;
+
                 this.modelTable.loading = true;
 
                 DICT_TYPT_LIST_SERVICE(Object.assign(this.modelTable.filter, {
 
-                    pageNo: this.modelTable.paging.pageIndex,
-                    pageSize: this.modelTable.paging.pageSize
+                    pageNo: vm.modelTable.paging.pageIndex,
+                    pageSize: vm.modelTable.paging.pageSize
 
                 })).then(response => {
 
                     var result = response.result;
 
                     if (!_.isNil(result)) {
-                        this.modelTable.data = result.records || [];
-                        this.modelTable.paging.pageIndex = result.current;
-                        this.modelTable.paging.pageSize = result.size;
-                        this.modelTable.paging.total = result.total;
+                        vm.modelTable.data = result.records || [];
+                        vm.modelTable.paging.total = result.total;
                     };
 
-                    this.modelTable.loading = false;
+                    vm.modelTable.loading = false;
 
                 });
 
             },
             onAddDictType() {
 
-                this.ref = "dictTypeSave";
+                this.showOkButton=true;
+
+                this.currentComponent = dictTypeSave;
+                this.currentComponentKey = null;
+
                 this.$refs.tablePannel.showDrawer = true;
-                this.$refs.tablePannel.drawerTitle = "添加字典";
+                this.$refs.tablePannel.drawerTitle = "添加字典类型";
+
+                this.modelForm.id = null;
 
             },
             onEditDictType(dictType) {
 
-                this.ref = "dictTypeSave";
+                this.showOkButton=true;
+
+                this.currentComponent = dictTypeSave;
+                this.currentComponentKey = dictType.id;
+
                 this.$refs.tablePannel.showDrawer = true;
-                this.$refs.tablePannel.drawerTitle = "编辑字典";
+                this.$refs.tablePannel.drawerTitle = "编辑字典类型（" + dictType.dictTypeName + "）";
+
                 this.modelForm.id = dictType.id;
 
             },
             onEditDict(dictType) {
 
-                this.ref = "dictList";
+                this.showOkButton=false;
+
+                this.currentComponent = dictList;
+                this.currentComponentKey = dictType.id;
+
                 this.$refs.tablePannel.showDrawer = true;
                 this.$refs.tablePannel.drawerTitle = "字典配置（" + dictType.dictTypeName + "）";
+
                 this.modelForm.id = dictType.dictTypeCode;
 
             },
             onOk() {
 
                 this.$refs.tablePannel.showLoading = true;
-
-                switch (this.ref) {
-                    case "dictTypeSave":
-                        this.$refs.dictTypeSave.onSaveDictType();
-                        break;
-                    default:
-                        break;
-                };
-
+                this.$refs.drawerComponent.onSaveDictType();
+                
             },
             onCancel() {
 
-                this.$refs.dictTypeSave.resetFields();
+                this.currentComponent = null;
+                this.currentComponentKey = null;
+
                 this.$refs.tablePannel.showDrawer = false;
                 this.$refs.tablePannel.showLoading = false;
+
                 this.modelForm.id = null;
 
             },
@@ -243,6 +250,20 @@
             },
             onSaveError() {
                 this.$refs.tablePannel.showLoading = false;
+            },
+            onBatchDictType(dictType) {
+
+                var statusCode = dictType.statusCode == 0 ? 1 : 0;
+
+                DICT_TYPT_BATCH_SERVICE({
+                    ids: dictType.id,
+                    statusCode: statusCode
+                }).then(response => {
+                    if (response.success) {
+                        this.$Message.success(dictType.statusCode == 0 ? '停用成功' : '启用成功');
+                        this.getDictTypeList();
+                    }
+                });
             },
             onDeleteDictType(dictType) {
                 DICT_TYPT_DELETE_SERVICE({
@@ -271,26 +292,8 @@
                     }
                 });
             },
-            onExportUserXls() {
-
-                var ids = [];
-                var dictTypeList = this.$refs.modelTable.getCheckboxRecords();
-                _.forEach(dictTypeList, function (dictType) {
-                    ids.push(dictType.id)
-                });
-
-                this.onExportXls({
-                    fileName: "字典类型列表",
-                    ids: ids,
-                    url: DICT_TYPT_EXPORT_SERVICE_URL
-                });
-
-            },
-            onImportUserXls(response, file, fileList) {
-                var vm = this;
-                this.onImportXls(response, file, fileList, function () {
-                    vm.getDictTypeList();
-                });
+            onTableCheckChange() {
+                this.modelTable.select = this.$refs.modelTable.getCheckboxRecords();
             },
             onPageChange(pageIndex) {
                 this.modelTable.paging.pageIndex = pageIndex;
@@ -299,9 +302,6 @@
             onPageSizeChange(pageSize) {
                 this.modelTable.paging.pageSize = pageSize;
                 this.getDictTypeList();
-            },
-            onTableCheckChange() {
-                this.modelTable.select = this.$refs.modelTable.getCheckboxRecords();
             },
             resetPage: function () {
                 this.modelTable.paging.pageIndex = 1;

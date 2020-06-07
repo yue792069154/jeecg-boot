@@ -15,11 +15,11 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface SysUserMapper extends BaseMapper<SysUser> {
 
-    @Select("select * from  sys_user  where user_name = #{userName} and status_code = '0'")
+    @Select("select * from  sys_user  where user_name = #{userName} and delete_code = '0'")
     SysUser getUserByUserName(@Param("userName") String userName);
 
 
-    List<SysUser> queryList();
+    List<SysUser> queryList(@Param("sysUser") SysUser sysUser);
 
 
 }

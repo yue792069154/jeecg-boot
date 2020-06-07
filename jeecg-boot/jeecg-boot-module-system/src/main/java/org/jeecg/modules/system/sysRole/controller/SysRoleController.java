@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import io.netty.util.internal.StringUtil;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.modules.system.sysRole.entity.SysRole;
@@ -37,21 +39,25 @@ public class SysRoleController extends JeecgController<SysRole, ISysRoleService>
 	/**
 	 * 分页列表查询
 	 *
-	 * @param sysRole
+	 * @param httpServletRequest
 	 * @param pageNo
 	 * @param pageSize
 	 * @return
 	 */
 	@AutoLog(value = "角色-分页列表查询")
 	@ApiOperation(value="角色-分页列表查询", notes="角色-分页列表查询")
-	@PostMapping(value = "/list")
-	public Result<?> queryPageList(@RequestBody SysRole sysRole,
+	@GetMapping(value = "/list")
+	public Result<?> queryPageList(HttpServletRequest httpServletRequest,
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize) {
+
+		String keyword=httpServletRequest.getParameter("keyword");
+
 		QueryWrapper<SysRole> queryWrapper = new QueryWrapper<>();
-		queryWrapper.ne("status_code",1)
-				.and(wrapper -> wrapper.like("role_name",sysRole.getRoleName()))
-				.orderByAsc("sort");
+		queryWrapper
+				.like(!StringUtil.isNullOrEmpty(keyword),"role_name",keyword)
+				.or()
+				.like(!StringUtil.isNullOrEmpty(keyword),"role_code",keyword);
 		Page<SysRole> page = new Page<SysRole>(pageNo, pageSize);
 		IPage<SysRole> pageList = sysRoleService.page(page, queryWrapper);
 		return Result.ok(pageList);

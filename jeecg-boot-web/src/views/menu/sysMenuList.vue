@@ -1,13 +1,23 @@
 <template>
     <table-pannel ref="tablePannel" @on-ok="onOk" @on-cancel="onCancel">
         <slot slot="alert">
-            <Alert show-icon>菜单管理，支持添加菜单、冻结菜单、删除菜单等功能</Alert>
+            <Alert show-icon>菜单管理：支持添加菜单、停用菜单、删除菜单、设置菜单图标等功能</Alert>
         </slot>
         <slot slot="filter">
             <table>
-                <tr>
+                 <tr>
                     <td>
-                        <Input suffix="ios-search" @on-change="onSearch" v-model="modelTable.filter.menuName"
+                        <Select clearable @on-change="onSearch" v-model="modelTable.filter.statusCode"
+                            placeholder="请选择菜单状态" style="width:140px">
+                            <Option value="0">正常</Option>
+                            <Option value="1">停用</Option>
+                        </Select>
+                    </td>
+                    <td>
+                        <Divider type="vertical" />
+                    </td>
+                    <td>
+                        <Input suffix="ios-search" @on-change="onSearch" v-model="modelTable.filter.keyword"
                             placeholder="请输入关键字查询" style="width: auto" />
                     </td>
                 </tr>
@@ -32,22 +42,32 @@
         <slot slot="summary">总计：筛选符合条件记录：{{modelTable.paging.total}} 条</slot>
         <slot slot="grid">
             <vxe-table ref="modelTable" border stripe resizable highlight-current-row show-header-overflow show-overflow
-                highlight-hover-row :loading="modelTable.loading" :data="modelTable.data" row-key row-id="key"
+                highlight-hover-row :loading="modelTable.loading" :data="modelTable.data" row-key row-id="id"
                 :tree-config="{children: 'children', accordion: true, line: true, iconOpen: 'vxe-icon--caret-right rotate45', iconClose: 'vxe-icon--caret-right'}"
                 :checkbox-config="{labelField: 'menuName'}" @select-change="onTableCheckChange">
                 <vxe-table-column type="checkbox" field="menuName" title="菜单名称" width="260" tree-node>
                 </vxe-table-column>
                 <vxe-table-column field="menuCode" title="菜单编码" align="center"></vxe-table-column>
-                <vxe-table-column field="menuIconProtContent" title="菜单图标" width="80" align="center">
+                <vxe-table-column field="menuIconProtContent" title="菜单图标" width="120" align="center">
                     <template v-slot="{ row }">
                         <span :class="row.menuIconProtContent"></span>
                     </template>
                 </vxe-table-column>
-                <vxe-table-column field="sort" title="菜单顺序" align="right"></vxe-table-column>
+                <vxe-table-column field="statusCode" title="状态" align="center"  width="120">
+                    <template v-slot="{ row }">
+                        <Tag v-if="row.statusCode=='0'" color="success">正常</Tag>
+                        <Tag v-if="row.statusCode=='1'" color="warning">停用</Tag>
+                    </template>
+                </vxe-table-column>
+                <vxe-table-column field="sort" title="菜单顺序" align="right"  width="80"> </vxe-table-column>
                 <vxe-table-column field="action" title="操作" align="center">
                     <template v-slot="{ row }">
                         <a href="javascript:void(0)" @click="onEditMenu(row)">
                             编辑
+                        </a>
+                        <Divider type="vertical" />
+                         <a href="javascript:void(0)" @click="onAddChildMenu(row)">
+                            添加子菜单
                         </a>
                         <Divider type="vertical" />
                         <Dropdown transfer>
@@ -61,9 +81,17 @@
                                         <DropdownItem>删除菜单</DropdownItem>
                                     </Poptip>
                                 </div>
-                                <div @click="onAddChildMenu(row)">
-                                    <DropdownItem>添加子菜单</DropdownItem>
+                                <div>
+                                    <Poptip v-if="row.statusCode=='0'" transfer confirm title="确定停用吗？"
+                                        @on-ok="onBatchMenu(row)">
+                                        <DropdownItem>停用菜单</DropdownItem>
+                                    </Poptip>
+                                    <Poptip v-if="row.statusCode=='1'" transfer confirm title="确定启用吗？"
+                                        @on-ok="onBatchMenu(row)">
+                                        <DropdownItem>启用菜单</DropdownItem>
+                                    </Poptip>
                                 </div>
+
                             </DropdownMenu>
                         </Dropdown>
                     </template>
@@ -74,9 +102,9 @@
 
         </slot>
         <slot slot="drawer">
-            <menu-save ref="menuSave" @on-save-error="onSaveError" @on-save-success="onSaveSuccess" :id="modelForm.id"
-                :parentMenuId="modelForm.parentMenuId">
-            </menu-save>
+            <component ref="drawerComponent" :key="currentComponentKey" :is="currentComponent"
+                @on-save-error="onSaveError" @on-save-success="onSaveSuccess" :id="modelForm.id"
+                :parentMenuId="modelForm.parentMenuId"></component>
         </slot>
     </table-pannel>
 </template>
@@ -87,7 +115,8 @@
     import {
         MENU_ALL_LIST_SERVICE,
         MENU_DELETE_SERVICE,
-        MENU_DELETE_BATCH_SERVICE
+        MENU_DELETE_BATCH_SERVICE,
+        MENU_BATCH_SERVICE
     } from "../../axios/api";
     import {
         Poptip
@@ -117,10 +146,14 @@
                     },
                     select: [],
                     filter: {
-                        menuName: ""
+                        statusCode: "",
+                        keyword: ""
                     },
                     loading: false
-                }
+                },
+
+                currentComponent: "",
+                currentComponentKey: ""
             }
         },
         mounted() {
@@ -129,10 +162,11 @@
         },
         methods: {
             onSearch() {
-                this.resetPage();
                 this.getMenuList();
             },
             getMenuList() {
+
+                var vm = this;
 
                 this.modelTable.loading = true;
 
@@ -142,49 +176,68 @@
 
                     if (!_.isNil(result)) {
 
+                        vm.modelTable.paging.total = result.length;
                         var menuTreeImpl = new TreeImpl(result, 'id', 'parentMenuId', 'children');
-                        this.modelTable.data = menuTreeImpl.treeList || [];
+                        vm.modelTable.data = menuTreeImpl.treeList || [];
 
                     };
 
-                    this.modelTable.loading = false;
+                    vm.modelTable.loading = false;
 
                 });
 
             },
             onAddMenu() {
 
+                this.currentComponent = menuSave;
+                this.currentComponentKey = null;
+
                 this.$refs.tablePannel.showDrawer = true;
                 this.$refs.tablePannel.drawerTitle = "添加菜单";
+
+                this.modelForm.id = null;
+                this.modelForm.parentMenuId = null;
 
 
             },
             onAddChildMenu(menu) {
+
+                this.currentComponent = menuSave;
+                this.currentComponentKey = menu.id;
+
                 this.$refs.tablePannel.showDrawer = true;
                 this.$refs.tablePannel.drawerTitle = "添加子菜单（" + menu.menuName + "）";
+
                 this.modelForm.parentMenuId = menu.id;
+
             },
             onEditMenu(menu) {
 
+                this.currentComponent = menuSave;
+                this.currentComponentKey = menu.id;
+
                 this.$refs.tablePannel.showDrawer = true;
-                this.$refs.tablePannel.drawerTitle = "编辑菜单";
+                this.$refs.tablePannel.drawerTitle = "编辑菜单（" + menu.menuName + "）";
+
                 this.modelForm.id = menu.id;
 
             },
             onOk() {
 
                 this.$refs.tablePannel.showLoading = true;
-                this.$refs.menuSave.onSaveMenu();
+                this.$refs.drawerComponent.onSaveMenu();
 
             },
             onCancel() {
 
-                this.$refs.menuSave.resetFields();
+                this.currentComponent = null;
+                this.currentComponentKey = null;
+
                 this.$refs.tablePannel.showDrawer = false;
                 this.$refs.tablePannel.showLoading = false;
+
                 this.modelForm.id = null;
                 this.modelForm.parentMenuId = null;
-
 
             },
             onSaveSuccess() {
@@ -195,6 +248,20 @@
             },
             onSaveError() {
                 this.$refs.tablePannel.showLoading = false;
+            },
+            onBatchMenu(menu) {
+
+                var statusCode = menu.statusCode == 0 ? 1 : 0;
+
+                MENU_BATCH_SERVICE({
+                    ids: menu.id,
+                    statusCode: statusCode
+                }).then(response => {
+                    if (response.success) {
+                        this.$Message.success(menu.statusCode == 0 ? '停用成功' : '启用成功');
+                        this.getMenuList();
+                    }
+                });
             },
             onDeleteMenu(menu) {
                 MENU_DELETE_SERVICE({
@@ -225,10 +292,6 @@
             },
             onTableCheckChange() {
                 this.modelTable.select = this.$refs.modelTable.getCheckboxRecords();
-            },
-            resetPage: function () {
-                this.modelTable.paging.pageIndex = 1;
-                this.modelTable.paging.pageSize = 10;
             }
 
         }

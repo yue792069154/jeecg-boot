@@ -4,13 +4,12 @@
             <table>
                 <tr>
                     <td>
-                        <Select clearable @on-change="onSearch" v-model="modelTable.filter.status" placeholder="请选择用户状态"
-                            style="width:140px">
-                            <Option value="1">正常</Option>
-                            <Option value="2">冻结</Option>
+                        <Select clearable @on-change="onSearch" v-model="modelTable.filter.statusCode"
+                            placeholder="请选择用户状态" style="width:140px">
+                            <Option value="0">正常</Option>
+                            <Option value="1">冻结</Option>
                         </Select>
                     </td>
-
                     <td>
                         <Divider type="vertical" />
                     </td>
@@ -36,8 +35,8 @@
                 </vxe-table-column>
                 <vxe-table-column field="statusCode" width="80" title="状态" align="center">
                     <template v-slot="{ row }">
-                        <Tag v-if="row.statusCode==0" color="success">正常</Tag>
-                        <Tag v-if="row.statusCode==-1" color="warning">停用</Tag>
+                        <Tag v-if="row.statusCode=='0'" color="success">正常</Tag>
+                        <Tag v-if="row.statusCode=='1'" color="warning">停用</Tag>
                     </template>
                 </vxe-table-column>
                 <vxe-table-column field="action" title="授权" align="center">
@@ -57,8 +56,8 @@
     import tablePannel from '../../components/table-pannel';
     import {
         USER_ALL_LIST_SERVICE,
-        ROLE_AUTH_ADD_USER_SERVICE,
-        ROLE_AUTH_DELETE_USER_SERVICE,
+        ROLE_ADD_USER_SERVICE,
+        ROLE_DELETE_USER_SERVICE,
         FILE_VIEW_SERVICE_URL
     } from "../../axios/api";
     import {
@@ -69,6 +68,7 @@
     } from '../../store/mutations';
 
     export default {
+        name: "roleUserList",
         components: {
             tablePannel
         },
@@ -87,7 +87,8 @@
                         total: 0
                     },
                     filter: {
-
+                        statusCode: "",
+                        keyword: ""
                     },
                     loading: false
                 },
@@ -98,13 +99,8 @@
 
             }
         },
-        watch: {
-            id(newValue, oldValue) {
-                this.onSearch();
-            }
-        },
         mounted() {
-
+            this.onSearch();
         },
         methods: {
             onSearch() {
@@ -130,30 +126,31 @@
             },
             onAuthUser(row) {
 
+                var vm = this;
+
                 if (!_.isNil(row.sysRoleIds) && row.sysRoleIds.indexOf(this.id) > -1) {
-                    ROLE_AUTH_DELETE_USER_SERVICE({
+                    ROLE_DELETE_USER_SERVICE({
                         roleId: this.id,
                         userId: row.id
                     }).then(response => {
 
                         if (response.success) {
                             this.$Message.success('取消授权成功');
+                            vm.getUserList();
                         }
                     });
                 } else {
-                    ROLE_AUTH_ADD_USER_SERVICE({
+                    ROLE_ADD_USER_SERVICE({
                         roleId: this.id,
-                        userIdList: [row.id]
+                        userId: row.id
                     }).then(response => {
 
                         if (response.success) {
                             this.$Message.success('授权成功');
+                            vm.getUserList();
                         }
                     });
                 }
-
-
-
 
             },
             onPageChange(pageIndex) {

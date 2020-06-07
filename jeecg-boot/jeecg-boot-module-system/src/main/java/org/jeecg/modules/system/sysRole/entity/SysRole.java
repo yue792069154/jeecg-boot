@@ -46,11 +46,15 @@ public class SysRole {
 	@Excel(name = "备注", width = 15)
     @ApiModelProperty(value = "备注")
 	private java.lang.String rem;
-	/**状态*/
-	@Excel(name = "状态", width = 15)
-    @ApiModelProperty(value = "状态")
-	@TableLogic
+	/**启用状态*/
+	@Excel(name = "启用状态", width = 15)
+	@ApiModelProperty(value = "启用状态")
 	private java.lang.String statusCode;
+	/**删除状态*/
+	@Excel(name = "删除状态", width = 15)
+	@ApiModelProperty(value = "删除状态")
+	@TableLogic
+	private java.lang.String deleteCode;
 	/**更新人*/
 	@Excel(name = "更新人", width = 15)
     @ApiModelProperty(value = "更新人")
@@ -71,4 +75,7 @@ public class SysRole {
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "创建时间")
 	private java.util.Date createTime;
+
+	@TableField(exist = false)
+	private String keyword;
 }

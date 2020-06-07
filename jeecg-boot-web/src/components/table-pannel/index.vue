@@ -48,7 +48,12 @@
             cardPannel
         },
         props: {
-
+            showOkButton: {
+                type: Boolean,
+                default () {
+                    return true;
+                }
+            },
         },
         data() {
             return {
@@ -62,8 +67,7 @@
                     position: 'static',
                     background: "white"
                 },
-                showLoading: false,
-                showOkButton: true
+                showLoading: false
             }
         },
         mounted() {

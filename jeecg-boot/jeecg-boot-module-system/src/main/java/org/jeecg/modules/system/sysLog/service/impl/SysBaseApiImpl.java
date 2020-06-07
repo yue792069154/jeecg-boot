@@ -73,8 +73,8 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		//获取登录用户信息
 		SysUser sysUser = (SysUser)SecurityUtils.getSubject().getPrincipal();
 		if(sysUser!=null){
-			sysLog.setUserid(sysUser.getUserName());
-			sysLog.setUsername(sysUser.getRealName());
+			sysLog.setUserId(sysUser.getUserName());
+			sysLog.setUserName(sysUser.getRealName());
 
 		}
 		sysLog.setCreateTime(new Date());

@@ -22,9 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * mybatis拦截器，自动注入创建人、创建时间、修改人、修改时间
- * @Author scott
- * @Date  2019-01-19
- *
  */
 @Slf4j
 @Component
@@ -49,7 +46,7 @@ public class MybatisInterceptor implements Interceptor {
 			for (Field field : fields) {
 				log.debug("------field.name------" + field.getName());
 				try {
-					if ("createBy".equals(field.getName())) {
+					if ("createrId".equals(field.getName())) {
 						field.setAccessible(true);
 						Object local_createBy = field.get(parameter);
 						field.setAccessible(false);
@@ -71,20 +68,6 @@ public class MybatisInterceptor implements Interceptor {
 							field.setAccessible(true);
 							field.set(parameter, new Date());
 							field.setAccessible(false);
-						}
-					}
-					//注入部门编码
-					if ("sysOrgCode".equals(field.getName())) {
-						field.setAccessible(true);
-						Object local_sysOrgCode = field.get(parameter);
-						field.setAccessible(false);
-						if (local_sysOrgCode == null || local_sysOrgCode.equals("")) {
-							// 获取登录用户信息
-							if (sysUser != null) {
-								field.setAccessible(true);
-								field.set(parameter, sysUser.getOrgCode());
-								field.setAccessible(false);
-							}
 						}
 					}
 				} catch (Exception e) {

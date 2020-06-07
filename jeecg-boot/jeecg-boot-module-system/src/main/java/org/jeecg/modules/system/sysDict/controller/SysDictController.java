@@ -4,6 +4,9 @@ import java.util.Arrays;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import io.netty.util.internal.StringUtil;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.modules.system.sysDict.entity.SysDict;
@@ -44,14 +47,22 @@ public class SysDictController extends JeecgController<SysDict, ISysDictService>
 	 */
 	@AutoLog(value = "字典-分页列表查询")
 	@ApiOperation(value="字典-分页列表查询", notes="字典-分页列表查询")
-	@PostMapping(value = "/list")
-	public Result<?> queryPageList(@RequestBody SysDict sysDict,
+	@GetMapping(value = "/list")
+	public Result<?> queryPageList(HttpServletRequest httpServletRequest,
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize) {
 
-		QueryWrapper<SysDict> queryWrapper = new QueryWrapper<>();
-		queryWrapper.ne("status_code",1)
-				.and(wrapper -> wrapper.like("dict_name",sysDict.getDictName()).or().like("dict_code",sysDict.getDictCode()))
+		String keyword=httpServletRequest.getParameter("keyword");
+		String statusCode=httpServletRequest.getParameter("statusCode");
+		String dictTypeCode=httpServletRequest.getParameter("dictTypeCode");
+
+		QueryWrapper<SysDict> queryWrapper =new QueryWrapper<>();
+		queryWrapper
+				.like(!StringUtil.isNullOrEmpty(keyword),"dict_name",keyword)
+				.or()
+				.like(!StringUtil.isNullOrEmpty(keyword),"dict_code",keyword)
+				.eq(!StringUtil.isNullOrEmpty(statusCode),"status_code",statusCode)
+				.eq(!StringUtil.isNullOrEmpty(dictTypeCode),"dict_type_code",dictTypeCode)
 				.orderByAsc("sort");
 		Page<SysDict> page = new Page<SysDict>(pageNo, pageSize);
 		IPage<SysDict> pageList = sysDictService.page(page, queryWrapper);
@@ -99,6 +110,29 @@ public class SysDictController extends JeecgController<SysDict, ISysDictService>
 		sysDictService.removeById(id);
 		return Result.ok("删除成功!");
 	}
+
+	 /**
+	  * 启用&停用
+	  * @param ids
+	  * @return
+	  */
+	 @GetMapping(value = "/frozenBatch")
+	 public Result<SysDict> frozenBatch(@RequestParam(name="ids",required=true) String ids,@RequestParam(name="statusCode",required=true) String statusCode) {
+		 Result<SysDict> result = new Result<SysDict>();
+		 String [] idList = ids.split(",");
+		 try {
+			 for (String id : idList) {
+				 this.sysDictService.update(new SysDict().setStatusCode(statusCode),
+						 new UpdateWrapper<SysDict>().lambda().eq(SysDict::getId,id));
+			 }
+		 } catch (Exception e) {
+			 log.error(e.getMessage(), e);
+			 result.error500("操作失败"+e.getMessage());
+		 }
+		 result.success("操作成功!");
+		 return result;
+
+	 }
 
 	 /**
 	  * 根据dictTypeCode查询字典列表

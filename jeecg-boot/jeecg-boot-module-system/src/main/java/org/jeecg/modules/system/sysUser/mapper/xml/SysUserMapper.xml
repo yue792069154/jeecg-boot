@@ -9,7 +9,15 @@
                 sys_user t1
                 LEFT JOIN sys_user_role t2 ON t1.id = t2.user_id
             WHERE
-                t1.status_code != '1'
+                t1.delete_code = '0'
+
+                <if test="sysUser.keyword != null and sysUser.keyword != ''">
+                    AND t1.user_name LIKE '%${sysUser.keyword}%' or  t1.real_name LIKE '%${sysUser.keyword}%'
+                </if>
+                <if test="sysUser.statusCode != null and sysUser.statusCode != ''">
+                    AND t1.status_code = #{sysUser.statusCode}
+                 </if>
+
             GROUP BY
                 t1.user_name
 	</select>

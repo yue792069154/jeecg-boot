@@ -8,8 +8,10 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import io.netty.util.internal.StringUtil;
 import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.system.query.QueryGenerator;
+
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.sysRole.entity.SysRoleMenu;
@@ -44,7 +46,7 @@ import io.swagger.annotations.ApiOperation;
 @Slf4j
 @Api(tags="角色菜单")
 @RestController
-@RequestMapping("/sysRole/sysRoleMenu")
+@RequestMapping("/sys/sysRoleMenu")
 public class SysRoleMenuController extends JeecgController<SysRoleMenu, ISysRoleMenuService> {
 	@Autowired
 	private ISysRoleMenuService sysRoleMenuService;
@@ -70,18 +72,52 @@ public class SysRoleMenuController extends JeecgController<SysRoleMenu, ISysRole
 		IPage<SysRoleMenu> pageList = sysRoleMenuService.page(page, queryWrapper);
 		return Result.ok(pageList);
 	}
+
+	 /**
+	  * 列表查询
+	  *
+	  * @param sysRoleMenu
+	  * @return
+	  */
+	 @AutoLog(value = "角色菜单-列表查询")
+	 @ApiOperation(value="角色菜单-列表查询", notes="角色菜单-列表查询")
+	 @PostMapping(value = "/queryall")
+	 public Result<?> queryList(@RequestBody SysRoleMenu sysRoleMenu) {
+		 QueryWrapper<SysRoleMenu> queryWrapper = new QueryWrapper<>();
+		 queryWrapper.eq(!StringUtil.isNullOrEmpty(sysRoleMenu.getRoleId()),"role_id",sysRoleMenu.getRoleId());
+		 List<SysRoleMenu> sysRoleMenuList = sysRoleMenuService.list(queryWrapper);
+		 return Result.ok(sysRoleMenuList);
+	 }
 	
 	/**
 	 * 添加
 	 *
-	 * @param sysRoleMenu
+	 * @param roleId
+	 * @param menuIds
 	 * @return
 	 */
 	@AutoLog(value = "角色菜单-添加")
 	@ApiOperation(value="角色菜单-添加", notes="角色菜单-添加")
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody SysRoleMenu sysRoleMenu) {
-		sysRoleMenuService.save(sysRoleMenu);
+
+		Result<?> result = new Result<>();
+		String [] menuIdList = sysRoleMenu.getMenuIds().split(",");
+		try {
+
+			QueryWrapper queryWrapper=new QueryWrapper();
+			queryWrapper.eq(!StringUtil.isNullOrEmpty(sysRoleMenu.getRoleId()),"role_id",sysRoleMenu.getRoleId());
+			sysRoleMenuService.remove(queryWrapper);
+
+			for (String menuId : menuIdList) {
+				this.sysRoleMenuService.save(new SysRoleMenu().setRoleId(sysRoleMenu.getRoleId()).setMenuId(menuId));
+			}
+
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			result.error500("操作失败"+e.getMessage());
+		}
+
 		return Result.ok("添加成功！");
 	}
 	

@@ -9,7 +9,7 @@ import org.jeecg.modules.system.sysDict.entity.SysDict;
 
 public interface SysDictMapper extends BaseMapper<SysDict> {
 
-    @Select("SELECT * FROM sys_dict WHERE status_code=0 and dict_type_code = '${dictTypeCode}' order by sort asc")
+    @Select("SELECT * FROM sys_dict WHERE status_code=0 and delete_code=0 and dict_type_code = #{dictTypeCode} order by sort asc")
     List<SysDict> getDictByDictTypeCode(@Param("dictTypeCode") String dictTypeCode);
 
 }

@@ -6,11 +6,11 @@
         <FormItem label="真实姓名" prop="realName">
             <Input placeholder="请输入真实姓名" v-model="modelForm.realName" clearable />
         </FormItem>
-        <FormItem label="登陆密码" prop="salt" v-if="!modelForm.id">
-            <Input placeholder="请输入登陆密码" v-model="modelForm.salt" clearable />
+        <FormItem label="登陆密码" prop="password" v-if="!modelForm.id">
+            <Input placeholder="请输入登陆密码" v-model="modelForm.password" clearable />
         </FormItem>
-        <FormItem label="确认密码" prop="confirmSalt" v-if="!modelForm.id">
-            <Input placeholder="请再次输入登陆密码" v-model="modelForm.confirmSalt" clearable />
+        <FormItem label="确认密码" prop="confirmPassword" v-if="!modelForm.id">
+            <Input placeholder="请再次输入登陆密码" v-model="modelForm.confirmPassword" clearable />
         </FormItem>
         <FormItem label="用户头像">
             <div class="img-upload-view-pannel">
@@ -52,16 +52,13 @@
     import Vue from 'vue';
     import _ from 'lodash';
     import {
-        POSITION_ALL_LIST_SERVICE,
-        DUPLICATE_CHECK_SERVICE,
+        USER_QUERY_SERVICE,
+        USER_ADD_SERVICE,
         USER_EDIT_SERVICE,
         USER_ROLE_ALL_LIST_SERVICE,
-        USER_ADD_SERVICE,
-        FILE_UPLOAD_SERVICE_URL,
-        FILE_VIEW_SERVICE_URL,
-        DEPART_TREE_LIST_SERVICE,
         ROLE_ALL_LIST_SERVICE,
-        USER_QUERY_SERVICE
+        FILE_UPLOAD_SERVICE_URL,
+        FILE_VIEW_SERVICE_URL
     } from "../../axios/api";
     import {
         Poptip
@@ -70,17 +67,12 @@
         ACCESS_TOKEN
     } from '../../store/mutations';
 
-    import Treeselect from '@riophae/vue-treeselect';
-    import '@riophae/vue-treeselect/dist/vue-treeselect.css';
-
     export default {
-        components: {
-            Treeselect
-        },
+        name: "userSave",
         props: {
             id: {
                 type: String
-            },
+            }
         },
         data() {
             return {
@@ -92,25 +84,24 @@
                     avatar: null,
                     realName: null,
                     phone: null,
-                    orgCode: null,
                     email: null,
                     userName: null,
-                    sysRoleIdList: [],
-                    salt: null,
-                    confirmSalt: null
+                    password: null,
+                    confirmPassword: null,
+                    sysRoleIdList: []
                 },
                 modelFormRule: {
                     userName: [{
                         required: true,
-                        //validator: this.validateUserName,
+                        message: '请输入用户账号',
                         trigger: 'change,blur'
                     }],
-                    salt: [{
+                    password: [{
                         required: true,
                         validator: this.validateToNextPassword,
                         trigger: 'change,blur'
                     }],
-                    confirmSalt: [{
+                    confirmPassword: [{
                         required: true,
                         validator: this.compareToFirstPassword,
                         trigger: 'change,blur'
@@ -121,11 +112,18 @@
                         trigger: 'change,blur'
                     }],
                     phone: [{
-                        //validator: this.validatePhone,
+                        pattern: /^1[3|4|5|7|8|9][0-9]\d{8}$/,
+                        message: '请输入正确格式的手机号码',
                         trigger: 'change,blur'
                     }],
                     email: [{
-                        //validator: this.validateEmail,
+                        pattern: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                        message: '请输入正确格式的邮箱',
+                        trigger: 'change,blur'
+                    }],
+                    telephone: [{
+                        pattern: /^0\d{2,3}-[1-9]\d{6,7}$/,
+                        message: '请输入正确的座机号码',
                         trigger: 'change,blur'
                     }],
                     sysRoleIdList: [{
@@ -133,25 +131,14 @@
                         type: 'array',
                         message: '请选择用户角色',
                         trigger: 'change,blur'
-                    }],
-                    telephone: [{
-                        pattern: /^0\d{2,3}-[1-9]\d{6,7}$/,
-                        message: '请输入正确的座机号码',
-                        trigger: 'change,blur'
                     }]
                 },
 
                 roleList: [],
 
-                fileUploadServiceUrl: FILE_UPLOAD_SERVICE_URL,
                 fileUploadHeaders: {},
+                fileUploadServiceUrl: FILE_UPLOAD_SERVICE_URL,
                 fileViewServiceUrl: FILE_VIEW_SERVICE_URL
-
-            }
-        },
-        watch: {
-            id(newValue, oldValue) {
-                this.getUser();
 
             }
         },
@@ -161,6 +148,7 @@
                 "X-Access-Token": Vue.ls.get(ACCESS_TOKEN)
             };
 
+            this.getUser();
             this.getRoleList();
 
         },
@@ -285,34 +273,12 @@
                     desc: '上传的文件过大, 不允许超过 2M'
                 });
             },
-            validateUserName(rule, value, callback) {
-
-                if (_.isNil(value)) {
-                    callback("请输入用户账号")
-                } else {
-                    DUPLICATE_CHECK_SERVICE({
-                        tableName: 'sys_user',
-                        fieldName: 'username',
-                        fieldVal: value,
-                        dataId: this.modelForm.id
-                    }).then(response => {
-                        if (response.success) {
-                            callback()
-                        } else {
-                            callback("用户账号已存在")
-                        }
-                    });
-
-                }
-
-
-            },
             compareToFirstPassword(rule, value, callback) {
 
                 if (_.isNil(value)) {
                     callback('请再次输入登陆密码');
                 } else {
-                    if (value !== this.modelForm.salt) {
+                    if (value !== this.modelForm.password) {
                         callback('两次输入的密码不一致');
                     } else {
                         callback()
@@ -326,66 +292,12 @@
                     callback("请输入登陆密码")
                 } else {
                     if (new RegExp(/(?=.*[a-z])(?=.*\d)(?=.*[#@!~%^&*])[a-z\d#@!~%^&*]{8,16}/i).test(value)) {
-                        this.$refs.modelForm.validateField('confirmSalt');
                         callback()
                     } else {
                         callback("密码长度8-16位，必须包含数字、字母、特殊符号");
                     }
                 }
 
-            },
-            validatePhone(rule, value, callback) {
-                if (_.isNil(value)) {
-                    callback()
-                } else {
-                    if (new RegExp(/^1[3|4|5|7|8|9][0-9]\d{8}$/).test(value)) {
-
-
-                        DUPLICATE_CHECK_SERVICE({
-                            tableName: 'sys_user',
-                            fieldName: 'phone',
-                            fieldVal: value,
-                            dataId: this.modelForm.id
-                        }).then(response => {
-                            if (response.success) {
-                                callback()
-                            } else {
-                                callback("手机号已存在")
-                            }
-                        });
-
-
-                    } else {
-                        callback("请输入正确格式的手机号码");
-                    }
-                }
-            },
-            validateEmail(rule, value, callback) {
-                if (_.isNil(value)) {
-                    callback()
-                } else {
-                    if (new RegExp(
-                            /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-                        ).test(value)) {
-
-
-                        DUPLICATE_CHECK_SERVICE({
-                            tableName: 'sys_user',
-                            fieldName: 'email',
-                            fieldVal: value,
-                            dataId: this.modelForm.id
-                        }).then(response => {
-                            if (response.success) {
-                                callback()
-                            } else {
-                                callback("邮箱已存在")
-                            }
-                        });
-
-                    } else {
-                        callback("请输入正确格式的邮箱")
-                    }
-                }
             }
         }
     };

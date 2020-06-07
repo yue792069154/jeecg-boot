@@ -60,13 +60,16 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 	 */
 	@AutoLog(value = "${tableVo.ftlDescription}-分页列表查询")
 	@ApiOperation(value="${tableVo.ftlDescription}-分页列表查询", notes="${tableVo.ftlDescription}-分页列表查询")
-	@PostMapping(value = "/list")
-	public Result<?> queryPageList(@RequestBody ${entityName} ${entityName?uncap_first},
+	@GetMapping(value = "/list")
+	public Result<?> queryPageList(HttpServletRequest httpServletRequest,
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
-								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
-								   HttpServletRequest req) {
+								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize) {
+
+		String keyword=httpServletRequest.getParameter("keyword");
+        String statusCode=httpServletRequest.getParameter("statusCode");
+
 		QueryWrapper<${entityName}> queryWrapper = new QueryWrapper<>();
-		queryWrapper.ne("status_code",1)
+
 		Page<${entityName}> page = new Page<${entityName}>(pageNo, pageSize);
 		IPage<${entityName}> pageList = ${entityName?uncap_first}Service.page(page, queryWrapper);
 		return Result.ok(pageList);

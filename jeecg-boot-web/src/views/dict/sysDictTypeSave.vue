@@ -21,15 +21,13 @@
     import Vue from 'vue';
     import _ from 'lodash';
     import {
-        DICT_TYPT_EDIT_SERVICE,
+        DICT_TYPT_QUERY_SERVICE,
         DICT_TYPT_ADD_SERVICE,
-        DICT_TYPT_QUERY_SERVICE
+        DICT_TYPT_EDIT_SERVICE
     } from "../../axios/api";
 
     export default {
-        components: {
-
-        },
+        name: "dictTypeSave",
         props: {
             id: {
                 type: String
@@ -60,15 +58,8 @@
                 }
             }
         },
-        watch: {
-            id(newValue, oldValue) {
-                this.getDictType();
-            }
-        },
         mounted() {
-
             this.getDictType();
-
         },
         methods: {
             getDictType() {

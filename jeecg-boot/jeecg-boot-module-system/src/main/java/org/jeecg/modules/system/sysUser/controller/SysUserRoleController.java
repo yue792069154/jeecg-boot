@@ -52,7 +52,6 @@ public class SysUserRoleController extends JeecgController<SysUserRole, ISysUser
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize) {
 		QueryWrapper<SysUserRole> queryWrapper = new QueryWrapper<>();
-		queryWrapper.ne("status_code",1);
 		Page<SysUserRole> page = new Page<SysUserRole>(pageNo, pageSize);
 		IPage<SysUserRole> pageList = sysUserRoleService.page(page, queryWrapper);
 		return Result.ok(pageList);
@@ -87,7 +86,7 @@ public class SysUserRoleController extends JeecgController<SysUserRole, ISysUser
 		sysUserRoleService.save(sysUserRole);
 		return Result.ok("添加成功！");
 	}
-	
+
 	/**
 	 * 编辑
 	 *
@@ -101,20 +100,23 @@ public class SysUserRoleController extends JeecgController<SysUserRole, ISysUser
 		sysUserRoleService.updateById(sysUserRole);
 		return Result.ok("编辑成功!");
 	}
-	
-	/**
-	 * 通过id删除
-	 *
-	 * @param id
-	 * @return
-	 */
-	@AutoLog(value = "用户角色-通过id删除")
-	@ApiOperation(value="用户角色-通过id删除", notes="用户角色-通过id删除")
-	@DeleteMapping(value = "/delete")
-	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
-		sysUserRoleService.removeById(id);
-		return Result.ok("删除成功!");
-	}
+
+	 /**
+	  * 通过id删除
+	  *
+	  * @param userId
+	  * @param roleId
+	  * @return
+	  */
+	 @AutoLog(value = "用户角色-通过userId、roleId删除")
+	 @ApiOperation(value="用户角色-通过userId、roleId删除", notes="用户角色-通过userId、roleId删除")
+	 @DeleteMapping(value = "/delete")
+	 public Result<?> delete(@RequestParam(name="userId",required=true) String userId,@RequestParam(name="roleId",required=true) String roleId) {
+		 QueryWrapper<SysUserRole> queryWrapper =new QueryWrapper<>();
+		 queryWrapper.eq("user_id",userId).eq("role_id",roleId);
+		 sysUserRoleService.remove(queryWrapper);
+		 return Result.ok("删除成功!");
+	 }
 	
 	/**
 	 * 批量删除

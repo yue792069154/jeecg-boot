@@ -26,10 +26,6 @@ import com.alibaba.fastjson.JSONObject;
 
 /**
  * 系统日志，切面处理类
- * 
- * @Author scott
- * @email jeecgos@163.com
- * @Date 2018年1月14日
  */
 @Aspect
 @Component
@@ -44,6 +40,7 @@ public class AutoLogAspect {
 
 	@Around("logPointCut()")
 	public Object around(ProceedingJoinPoint point) throws Throwable {
+
 		long beginTime = System.currentTimeMillis();
 		//执行方法
 		Object result = point.proceed();
@@ -57,6 +54,7 @@ public class AutoLogAspect {
 	}
 
 	private void saveSysLog(ProceedingJoinPoint joinPoint, long time) {
+
 		MethodSignature signature = (MethodSignature) joinPoint.getSignature();
 		Method method = signature.getMethod();
 
@@ -97,12 +95,12 @@ public class AutoLogAspect {
 		//获取登录用户信息
 		SysUser sysUser = (SysUser)SecurityUtils.getSubject().getPrincipal();
 		if(sysUser!=null){
-			sysLog.setUserid(sysUser.getUserName());
-			sysLog.setUsername(sysUser.getRealName());
+			sysLog.setUserId(sysUser.getUserName());
+			sysLog.setUserName(sysUser.getRealName());
 
 		}
 		//耗时
-		sysLog.setCostTime(time);
+		sysLog.setCostTime((int)time);
 		sysLog.setCreateTime(new Date());
 		//保存系统日志
 		sysLogService.save(sysLog);

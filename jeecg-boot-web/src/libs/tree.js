@@ -89,7 +89,7 @@ export default class TreeImpl {
     }
 
     _getList(treeList) {
-        if (!_.isNil(treeList)) {
+        if (_.isNil(treeList)) {
             return treeList;
         };
 
@@ -124,9 +124,9 @@ export default class TreeImpl {
         var nodesFieldName = this.nodesFieldName;
 
         var childNodes = node[nodesFieldName];
-        if (!_.isNil(childNodes)) {
+        if (_.isNil(childNodes)) {
             childNodes = [];
-        };
+        }
         return childNodes;
     }
 

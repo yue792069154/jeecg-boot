@@ -40,4 +40,7 @@ public class SysRoleMenu {
 	@Excel(name = "菜单id", width = 15)
     @ApiModelProperty(value = "菜单id")
 	private java.lang.String menuId;
+
+	@TableField(exist = false)
+	private String menuIds;
 }

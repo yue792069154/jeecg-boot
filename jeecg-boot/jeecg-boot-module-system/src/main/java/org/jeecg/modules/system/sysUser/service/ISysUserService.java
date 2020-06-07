@@ -24,6 +24,6 @@ public interface ISysUserService extends IService<SysUser> {
 
     Set<String> getUserRoleCodeSet(String userName);
 
-    List<SysUser> queryList();
+    List<SysUser> queryList(SysUser sysUser);
 
 }

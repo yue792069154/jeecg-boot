@@ -13,7 +13,7 @@
         <FormItem prop="captcha">
             <Input type="captcha" v-model="formInline.captcha" placeholder="captcha">
             </Input>
-            <verification-code :remote="true" @success="generateCode" ref="verificationCode"></verification-code>
+            <verification-code :remote="true" ref="verificationCode"></verification-code>
         </FormItem>
         <FormItem>
             <Button type="primary" @click="handleSubmit('formInline')">Signin</Button>
@@ -57,17 +57,16 @@
                     };
 
                     this.$store.dispatch('login', loginInfo).then(response=>{
-                        this.$router.push('/home')
-                    })
+                        this.$router.push('/system')
+                    });
+
+                   
                 }
 
             }
 
 
 
-        },
-        generateCode(value) {
-            this.verifiedCode = value.toLowerCase()
         }
 
     }

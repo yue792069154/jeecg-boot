@@ -52,6 +52,9 @@
     import {
         MENU_USER_LIST_SERVICE
     } from "../../../axios/api";
+    import router from '../../../router';
+    import Util from '../../../libs/util';
+
 
     export default {
         components: {
@@ -93,6 +96,11 @@
             };
         },
         mounted() {
+
+            this.$store.dispatch('menu').then(response => {
+
+            });
+
             this.init();
         },
         methods: {
@@ -111,7 +119,7 @@
 
                         var firstLeafMenu = this.menuTreeImpl.getFirstLeafNode();
                         if (!_.isNil(firstLeafMenu)) {
-                             this.onHeaderMenuSelect(firstLeafMenu.id);
+                            this.onHeaderMenuSelect(firstLeafMenu.id);
                         }
                     }
 
@@ -136,7 +144,7 @@
                     if (!_.isNil(menu.children) && menu.children.length > 0) {
                         this.menuSiderList = menu.children || [];
                         menu.menuShowSider = true;
-                        var firstLeafMenu = new TreeImpl(menu, 'id', 'parentId', 'children')
+                        var firstLeafMenu = new TreeImpl(menu, 'id', 'parentMenuId', 'children')
                             .getFirstLeafNode();
                         this.onSiderMenuSelect(firstLeafMenu.id);
                     } else {
@@ -188,11 +196,11 @@
 
                 this.menuSiderActiveName = menuId;
 
+
                 this.$nextTick(function () {
                     this.$refs.refMenu.updateActiveName();
+                    this.$router.push('/system/' + (this.menuActive.menuRouteContent||this.menuActive.id));
                 });
-
-
 
 
             },

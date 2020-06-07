@@ -1,23 +1,23 @@
 <template>
     <table-pannel ref="tablePannel" @on-ok="onOk" @on-cancel="onCancel">
         <slot slot="alert">
-            <Alert show-icon>用户管理，支持EXCEL导入、导出、添加用户、冻结用户、删除用户等功能</Alert>
+            <Alert show-icon>用户管理：支持添加用户、冻结用户、删除用户、修改密码等功能</Alert>
         </slot>
         <slot slot="filter">
             <table>
                 <tr>
                     <td>
-                        <Select clearable @on-change="onSearch" v-model="modelTable.filter.statusCode" placeholder="请选择用户状态"
-                            style="width:140px">
+                        <Select clearable @on-change="onSearch" v-model="modelTable.filter.statusCode"
+                            placeholder="请选择用户状态" style="width:140px">
                             <Option value="0">正常</Option>
-                            <Option value="-1">冻结</Option>
+                            <Option value="1">冻结</Option>
                         </Select>
                     </td>
                     <td>
                         <Divider type="vertical" />
                     </td>
                     <td>
-                        <Input suffix="ios-search" @on-change="onSearch" v-model="modelTable.filter.userName"
+                        <Input suffix="ios-search" @on-change="onSearch" v-model="modelTable.filter.keyword"
                             placeholder="请输入关键字查询" style="width: auto" />
                     </td>
                 </tr>
@@ -27,15 +27,6 @@
 
             <table>
                 <tr>
-                    <td>
-                        <Button type="text" icon="ios-cloud-upload" @click="onExportUserXls">导出</Button>
-                    </td>
-                    <td>
-                        <Upload :show-upload-list="false" :headers="fileUploadHeaders" :action="importServiceUrl"
-                            :on-success="onImportUserXls" :format="['xls','xlsx']">
-                            <Button type="text" icon="ios-cloud-download">导入</Button>
-                        </Upload>
-                    </td>
                     <td>
                         <Button type="primary" @click="onAddUser">添加用户</Button>
                     </td>
@@ -64,10 +55,10 @@
                 </vxe-table-column>
                 <vxe-table-column field="phone" title="手机号码" align="center"></vxe-table-column>
                 <vxe-table-column field="email" title="邮箱"></vxe-table-column>
-               <vxe-table-column field="statusCode" width="80" title="状态" align="center">
+                <vxe-table-column field="statusCode" width="80" title="状态" align="center">
                     <template v-slot="{ row }">
-                        <Tag v-if="row.statusCode==0" color="success">正常</Tag>
-                        <Tag v-if="row.statusCode==-1" color="warning">停用</Tag>
+                        <Tag v-if="row.statusCode=='0'" color="success">正常</Tag>
+                        <Tag v-if="row.statusCode=='1'" color="warning">停用</Tag>
                     </template>
                 </vxe-table-column>
                 <vxe-table-column field="action" title="操作" align="center">
@@ -86,11 +77,11 @@
                                     <DropdownItem>重设密码</DropdownItem>
                                 </div>
                                 <div>
-                                    <Poptip v-if="row.status==-1" transfer confirm title="确定冻结吗？"
+                                    <Poptip v-if="row.statusCode=='0'" transfer confirm title="确定冻结吗？"
                                         @on-ok="onBatchUser(row)">
                                         <DropdownItem>冻结用户</DropdownItem>
                                     </Poptip>
-                                    <Poptip v-if="row.status==0" transfer confirm title="确定解冻吗？"
+                                    <Poptip v-if="row.statusCode=='1'" transfer confirm title="确定解冻吗？"
                                         @on-ok="onBatchUser(row)">
                                         <DropdownItem>解冻用户</DropdownItem>
                                     </Poptip>
@@ -109,16 +100,13 @@
             </vxe-table>
         </slot>
         <slot slot="page">
-            <Page :page-size-opts="[10, 20, 50, 100]" :total="modelTable.paging.total"
-                :current="modelTable.paging.pageIndex" :page-size="modelTable.paging.pageSize" @on-change="onPageChange"
+            <Page :page-size-opts="[10, 20, 30, 40]" :total="modelTable.paging.total" :current="modelTable.paging.pageIndex"
+                :page-size="modelTable.paging.pageSize" @on-change="onPageChange"
                 @on-page-size-change="onPageSizeChange" show-total show-sizer show-elevator />
         </slot>
         <slot slot="drawer">
-            <user-save v-show="ref=='userSave'" ref="userSave" @on-save-error="onSaveError"
-                @on-save-success="onSaveSuccess" :id="modelForm.id">
-            </user-save>
-            <user-Password v-show="ref=='userPassword'" ref="userPassword" @on-save-error="onSaveError"
-                @on-save-success="onSaveSuccess" :id="modelForm.id"></user-password>
+            <component ref="drawerComponent" :key="currentComponentKey" :is="currentComponent"
+                @on-save-error="onSaveError" @on-save-success="onSaveSuccess" :id="modelForm.id"></component>
         </slot>
     </table-pannel>
 </template>
@@ -128,15 +116,10 @@
     import tablePannel from '../../components/table-pannel';
     import {
         USER_LIST_SERVICE,
-        USER_BATCH_SERVICE,
         USER_DELETE_SERVICE,
-        DUPLICATE_CHECK_SERVICE,
-        USER_ROLE_LIST_SERVICE,
-        USER_DEPART_LIST_SERVICE,
-        FILE_VIEW_SERVICE_URL,
         USER_DELETE_BATCH_SERVICE,
-        USER_EXPORT_SERVICE_URL,
-        USER_IMPORT_SERVICE_URL
+        USER_BATCH_SERVICE,
+        FILE_VIEW_SERVICE_URL
     } from "../../axios/api";
     import {
         Poptip
@@ -144,10 +127,6 @@
     import {
         ACCESS_TOKEN
     } from '../../store/mutations';
-
-    import {
-        ExcelMixins
-    } from '../../mixins/mixins';
     import Treeselect from '@riophae/vue-treeselect';
     import '@riophae/vue-treeselect/dist/vue-treeselect.css';
     import userSave from './sysUserSave'
@@ -159,7 +138,6 @@
             userSave,
             userPassword
         },
-        mixins: [ExcelMixins],
         data() {
             return {
 
@@ -176,16 +154,16 @@
                     select: [],
                     filter: {
                         statusCode: "",
-                        userName: ""
+                        keyword: ""
                     },
                     loading: false
                 },
 
                 fileUploadHeaders: {},
                 fileViewServiceUrl: FILE_VIEW_SERVICE_URL,
-                importServiceUrl: USER_IMPORT_SERVICE_URL,
 
-                ref: ""
+                currentComponent: "",
+                currentComponentKey: ""
 
             }
         },
@@ -204,50 +182,59 @@
             },
             getUserList() {
 
+                var vm = this;
+
                 this.modelTable.loading = true;
 
                 USER_LIST_SERVICE(Object.assign(this.modelTable.filter, {
 
-                    pageNo: this.modelTable.paging.pageIndex,
-                    pageSize: this.modelTable.paging.pageSize
+                    pageNo: vm.modelTable.paging.pageIndex,
+                    pageSize: vm.modelTable.paging.pageSize
 
                 })).then(response => {
 
                     var result = response.result;
 
                     if (!_.isNil(result)) {
-                        this.modelTable.data = result.records || [];
-                        this.modelTable.paging.pageIndex = result.current;
-                        this.modelTable.paging.pageSize = result.size;
-                        this.modelTable.paging.total = result.total;
+                        vm.modelTable.data = result.records || [];
+                        vm.modelTable.paging.total = result.total;
                     };
 
-                    this.modelTable.loading = false;
+                    vm.modelTable.loading = false;
 
                 });
 
             },
             onAddUser() {
 
-                this.ref = "userSave";
+                this.currentComponent = userSave;
+                this.currentComponentKey = null;
+
                 this.$refs.tablePannel.showDrawer = true;
                 this.$refs.tablePannel.drawerTitle = "添加用户";
 
+                this.modelForm.id = null;
 
             },
             onEditUser(user) {
 
-                this.ref = "userSave";
+                this.currentComponent = userSave;
+                this.currentComponentKey = user.id;
+
                 this.$refs.tablePannel.showDrawer = true;
-                this.$refs.tablePannel.drawerTitle = "编辑用户";
+                this.$refs.tablePannel.drawerTitle = "编辑用户（" + user.realName + "）";
+
                 this.modelForm.id = user.id;
 
             },
             onChangePassword(user) {
 
-                this.ref = "userPassword";
+                this.currentComponent = userPassword;
+                this.currentComponentKey = user.id;
+
                 this.$refs.tablePannel.showDrawer = true;
-                this.$refs.tablePannel.drawerTitle = "重设密码";
+                this.$refs.tablePannel.drawerTitle = "重设密码（" + user.realName + "）";
+
                 this.modelForm.id = user.id;
 
             },
@@ -255,12 +242,12 @@
 
                 this.$refs.tablePannel.showLoading = true;
 
-                switch (this.ref) {
+                switch (this.currentComponent.name) {
                     case "userSave":
-                        this.$refs.userSave.onSaveUser();
+                        this.$refs.drawerComponent.onSaveUser();
                         break;
                     case "userPassword":
-                        this.$refs.userPassword.onChangePassword();
+                        this.$refs.drawerComponent.onChangePassword();
                         break;
                     default:
                         break;
@@ -269,11 +256,14 @@
             },
             onCancel() {
 
-                this.$refs.userSave.resetFields();
-                this.$refs.userPassword.resetFields();
+                this.currentComponent = null;
+                this.currentComponentKey = null;
+
                 this.$refs.tablePannel.showDrawer = false;
                 this.$refs.tablePannel.showLoading = false;
+
                 this.modelForm.id = null;
+
 
             },
             onSaveSuccess() {
@@ -286,8 +276,9 @@
                 this.$refs.tablePannel.showLoading = false;
             },
             onBatchUser(user) {
-                //1 正常 2冻结
-                var statusCode = user.statusCode == 0 ? -1 : 0;
+
+                var statusCode = user.statusCode == 0 ? 1 : 0;
+
                 USER_BATCH_SERVICE({
                     ids: user.id,
                     statusCode: statusCode
@@ -312,7 +303,7 @@
 
                 var ids = [];
                 var userList = this.$refs.modelTable.getCheckboxRecords();
-                  _.forEach(userList, function (user) {
+                _.forEach(userList, function (user) {
                     ids.push(user.id)
                 });
 
@@ -325,26 +316,8 @@
                     }
                 });
             },
-            onExportUserXls() {
-
-                var ids = [];
-                var userList = this.$refs.modelTable.getCheckboxRecords();
-                _.forEach(userList, function (user) {
-                    ids.push(user.id)
-                });
-
-                this.onExportXls({
-                    fileName: "用户列表",
-                    ids: ids,
-                    url: USER_EXPORT_SERVICE_URL
-                });
-
-            },
-            onImportUserXls(response, file, fileList) {
-                var vm = this;
-                this.onImportXls(response, file, fileList, function () {
-                    vm.getUserList();
-                });
+            onTableCheckChange() {
+                this.modelTable.select = this.$refs.modelTable.getCheckboxRecords();
             },
             onPageChange(pageIndex) {
                 this.modelTable.paging.pageIndex = pageIndex;
@@ -353,9 +326,6 @@
             onPageSizeChange(pageSize) {
                 this.modelTable.paging.pageSize = pageSize;
                 this.getUserList();
-            },
-            onTableCheckChange() {
-                this.modelTable.select = this.$refs.modelTable.getCheckboxRecords();
             },
             resetPage: function () {
                 this.modelTable.paging.pageIndex = 1;

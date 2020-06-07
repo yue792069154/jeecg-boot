@@ -1,13 +1,13 @@
 <template>
-    <table-pannel ref="tablePannel" @on-ok="onOk" @on-cancel="onCancel">
+    <table-pannel ref="tablePannel" @on-ok="onOk" @on-cancel="onCancel" :show-ok-button="showOkButton">
         <slot slot="alert">
-            <Alert show-icon>角色管理，支持EXCEL导入、导出、菜单授权等功能</Alert>
+            <Alert show-icon>角色管理：支持授权菜单、授权用户等功能</Alert>
         </slot>
         <slot slot="filter">
             <table>
                 <tr>
                     <td>
-                        <Input suffix="ios-search" @on-change="onSearch" v-model="modelTable.filter.roleName"
+                        <Input suffix="ios-search" @on-change="onSearch" v-model="modelTable.filter.keyword"
                             placeholder="请输入关键字查询" style="width: auto" />
                     </td>
                 </tr>
@@ -17,15 +17,6 @@
 
             <table>
                 <tr>
-                    <td>
-                        <Button type="text" icon="ios-cloud-upload" @click="onExportRoleXls">导出</Button>
-                    </td>
-                    <td>
-                        <Upload :show-upload-list="false" :headers="fileUploadHeaders" :action="importServiceUrl"
-                            :on-success="onImportRoleXls" :format="['xls','xlsx']">
-                            <Button type="text" icon="ios-cloud-download">导入</Button>
-                        </Upload>
-                    </td>
                     <td>
                         <Button type="primary" @click="onAddRole">添加角色</Button>
                     </td>
@@ -87,12 +78,8 @@
                 @on-page-size-change="onPageSizeChange" show-total show-sizer show-elevator />
         </slot>
         <slot slot="drawer">
-            <role-save v-show="ref=='roleSave'" ref="roleSave" @on-save-error="onSaveError"
-                @on-save-success="onSaveSuccess" :id="modelForm.id">
-            </role-save>
-            <role-user-list v-show="ref=='roleUserList'" ref="roleUserList" :id="modelForm.id"></role-user-list>
-            <role-menu-list v-show="ref=='roleMenuList'" ref="roleMenuList" :id="modelForm.id"
-                @on-save-error="onSaveError" @on-save-success="onSaveSuccess"></role-menu-list>
+            <component ref="drawerComponent" :key="currentComponentKey" :is="currentComponent"
+                @on-save-error="onSaveError" @on-save-success="onSaveSuccess" :id="modelForm.id"></component>
         </slot>
     </table-pannel>
 </template>
@@ -105,34 +92,22 @@
         ROLE_ADD_SERVICE,
         ROLE_EDIT_SERVICE,
         ROLE_DELETE_SERVICE,
-        ROLE_DELETE_BATCH_SERVICE,
-        ROLE_EXPORT_SERVICE_URL,
-        ROLE_IMPORT_SERVICE_URL
+        ROLE_DELETE_BATCH_SERVICE
     } from "../../axios/api";
     import {
         Poptip
     } from 'view-design';
-    import {
-        ACCESS_TOKEN
-    } from '../../store/mutations';
 
-    import {
-        ExcelMixins
-    } from '../../mixins/mixins';
-    import Treeselect from '@riophae/vue-treeselect';
-    import '@riophae/vue-treeselect/dist/vue-treeselect.css';
     import roleSave from './sysRoleSave';
     import roleUserList from './sysRoleUserList';
     import roleMenuList from './sysRoleMenuList';
     export default {
         components: {
             tablePannel,
-            Treeselect,
             roleSave,
             roleUserList,
             roleMenuList
         },
-        mixins: [ExcelMixins],
         data() {
             return {
 
@@ -148,25 +123,20 @@
                     },
                     select: [],
                     filter: {
-                        roleName: ""
+                        keyword: ""
                     },
                     loading: false
                 },
 
-                fileUploadHeaders: {},
-                importServiceUrl: ROLE_IMPORT_SERVICE_URL,
+                currentComponent: "",
+                currentComponentKey: "",
 
-                ref: ""
+                showOkButton: false
 
             }
         },
         mounted() {
-
-            this.fileUploadHeaders = {
-                "X-Access-Token": Vue.ls.get(ACCESS_TOKEN)
-            };
-
-            this.getRoleList();
+            this.onSearch();
         },
         methods: {
             onSearch() {
@@ -174,6 +144,8 @@
                 this.getRoleList();
             },
             getRoleList() {
+
+                var vm = this;
 
                 this.modelTable.loading = true;
 
@@ -187,64 +159,74 @@
                     var result = response.result;
 
                     if (!_.isNil(result)) {
-                        this.modelTable.data = result.records || [];
-                        this.modelTable.paging.pageIndex = result.current;
-                        this.modelTable.paging.pageSize = result.size;
-                        this.modelTable.paging.total = result.total;
+                        vm.modelTable.data = result.records || [];
+                        vm.modelTable.paging.total = result.total;
                     };
 
-                    this.modelTable.loading = false;
+                    vm.modelTable.loading = false;
 
                 });
 
             },
             onAddRole() {
 
-                this.ref = "roleSave";
+                this.showOkButton = true;
+
+                this.currentComponent = roleSave;
+                this.currentComponentKey = null;
+
                 this.$refs.tablePannel.showDrawer = true;
                 this.$refs.tablePannel.drawerTitle = "添加角色";
-                this.$refs.tablePannel.showOkButton = true;
-
-
             },
             onEditRole(role) {
 
-                this.ref = "roleSave";
-                this.modelForm.id = role.id;
-                this.$refs.tablePannel.drawerTitle = "编辑角色";
+                this.showOkButton = true;
+
+                this.currentComponent = roleSave;
+                this.currentComponentKey = role.id;
+
+                this.$refs.tablePannel.drawerTitle = "编辑角色（" + role.roleName + "）";
                 this.$refs.tablePannel.showDrawer = true;
-                this.$refs.tablePannel.showOkButton = true;
 
-
+                this.modelForm.id = role.id;
             },
             onAuthUser(role) {
 
-                this.ref = "roleUserList";
-                this.modelForm.id = role.id;
-                this.$refs.tablePannel.drawerTitle = "授权用户";
+                this.showOkButton = false;
+
+                this.currentComponent = roleUserList;
+                this.currentComponentKey = role.id;
+
+                
+                this.$refs.tablePannel.drawerTitle = "授权用户（" + role.roleName + "）";
                 this.$refs.tablePannel.showDrawer = true;
-                this.$refs.tablePannel.showOkButton = false;
+
+                this.modelForm.id = role.id;
 
             },
             onAuthMenu(role) {
 
-                this.ref = "roleMenuList";
-                this.modelForm.id = role.id;
-                this.$refs.tablePannel.drawerTitle = "授权菜单";
+                this.showOkButton = true;
+
+                this.currentComponent = roleMenuList;
+                this.currentComponentKey = role.id;
+
+                this.$refs.tablePannel.drawerTitle = "授权菜单（" + role.roleName + "）";
                 this.$refs.tablePannel.showDrawer = true;
-                this.$refs.tablePannel.showOkButton = true;
+                
+                this.modelForm.id = role.id;
 
             },
             onOk() {
 
                 this.$refs.tablePannel.showLoading = true;
 
-                switch (this.ref) {
+                switch (this.currentComponent.name) {
                     case "roleSave":
-                        this.$refs.roleSave.onSaveRole();
+                        this.$refs.drawerComponent.onSaveRole();
                         break;
                     case "roleMenuList":
-                        this.$refs.roleMenuList.onSaveAuthMenu();
+                        this.$refs.drawerComponent.onSaveAuthMenu();
                         break;
                     default:
                         break;
@@ -253,9 +235,12 @@
             },
             onCancel() {
 
-                this.$refs.roleSave.resetFields();
+                this.currentComponent = null;
+                this.currentComponentKey = null;
+
                 this.$refs.tablePannel.showDrawer = false;
                 this.$refs.tablePannel.showLoading = false;
+
                 this.modelForm.id = null;
 
             },
@@ -295,26 +280,8 @@
                     }
                 });
             },
-            onExportRoleXls() {
-
-                var ids = [];
-                var roleList = this.$refs.modelTable.getCheckboxRecords();
-                _.forEach(roleList, function (role) {
-                    ids.push(role.id)
-                });
-
-                this.onExportXls({
-                    fileName: "角色列表",
-                    ids: ids,
-                    url: ROLE_EXPORT_SERVICE_URL
-                });
-
-            },
-            onImportRoleXls(response, file, fileList) {
-                var vm = this;
-                this.onImportXls(response, file, fileList, function () {
-                    vm.getRoleList();
-                });
+            onTableCheckChange() {
+                this.modelTable.select = this.$refs.modelTable.getCheckboxRecords();
             },
             onPageChange(pageIndex) {
                 this.modelTable.paging.pageIndex = pageIndex;
@@ -323,9 +290,6 @@
             onPageSizeChange(pageSize) {
                 this.modelTable.paging.pageSize = pageSize;
                 this.getRoleList();
-            },
-            onTableCheckChange() {
-                this.modelTable.select = this.$refs.modelTable.getCheckboxRecords();
             },
             resetPage: function () {
                 this.modelTable.paging.pageIndex = 1;

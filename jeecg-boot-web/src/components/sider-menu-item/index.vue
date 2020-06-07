@@ -11,16 +11,7 @@
                         <i :class="item.menuIconProtContent"></i>
                     </template>
 
-                    <template v-if="item.statusCode==0">
-
-                        <Tooltip content=" 已停用" placement="right">
-                            <label style="color: #8C8C8C;cursor: not-allowed;" v-text="item.menuName"></label>
-                        </Tooltip>
-
-                    </template>
-                    <template v-else>
-                        <label :class="item.menuClass" :style="item.menuStyle" v-text="item.menuName"></label>
-                    </template>
+                    <label :class="item.menuClass" :style="item.menuStyle" v-text="item.menuName"></label>
 
                 </Menu-Item>
             </template>
@@ -35,14 +26,7 @@
                             <i :class="item.menuIconProtContent"></i>
                         </template>
 
-                        <template v-if="item.statusCode==0">
-                            <Tooltip content=" 已停用" placement="right">
-                                <label style="color: #8C8C8C;cursor: not-allowed;" v-text="item.menuName"></label>
-                            </Tooltip>
-                        </template>
-                        <template v-else>
-                            <label :class="item.menuClass" :style="item.menuStyle" v-text="item.menuName"></label>
-                        </template>
+                         <label :class="item.menuClass" :style="item.menuStyle" v-text="item.menuName"></label>
 
                     </template>
                     <template v-if="item.children && item.children.length === 0">
@@ -56,16 +40,8 @@
                                     <i :class="child.menuIconProtContent"></i>
                                 </template>
 
-                                <template v-if="child.statusCode==0">
-                                    <Tooltip content=" 已停用" placement="right">
-                                        <label style="color: #8C8C8C;cursor: not-allowed;"
-                                            v-text="child.menuName"></label>
-                                    </Tooltip>
-                                </template>
-                                <template v-else>
-                                    <label :class="child.menuClass" :style="child.menuStyle"
+                                 <label :class="child.menuClass" :style="child.menuStyle"
                                         v-text="child.menuName"></label>
-                                </template>
 
                             </Menu-Item>
                         </template>

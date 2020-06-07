@@ -53,23 +53,12 @@
                         message: '请输入字典编码',
                         trigger: 'blur'
                     }]
-                },
-
-                dict: {
-                    positionRank: []
                 }
 
             }
         },
-        watch: {
-            id(newValue, oldValue) {
-                this.getDictType();
-            }
-        },
         mounted() {
-
             this.getDictType();
-
         },
         methods: {
             getDictType() {

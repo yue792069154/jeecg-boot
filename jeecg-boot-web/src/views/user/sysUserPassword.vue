@@ -1,16 +1,16 @@
 <template>
     <Form label-position="top" ref="modelForm" :model="modelForm" :rules="modelFormRule">
-        <FormItem label="用户账号" prop="username">
-            <Input placeholder="请输入用户账号" v-model="modelForm.username" disabled />
+        <FormItem label="用户账号" prop="userName">
+            <Input placeholder="请输入用户账号" v-model="modelForm.userName" disabled />
         </FormItem>
-        <FormItem label="真实姓名" prop="realname">
-            <Input placeholder="请输入真实姓名" v-model="modelForm.realname" disabled />
+        <FormItem label="真实姓名" prop="realName">
+            <Input placeholder="请输入真实姓名" v-model="modelForm.realName" disabled />
         </FormItem>
         <FormItem label="登陆密码" prop="password">
             <Input placeholder="请输入登陆密码" v-model="modelForm.password" clearable />
         </FormItem>
-        <FormItem label="确认密码" prop="confirmpassword">
-            <Input placeholder="请再次输入登陆密码" v-model="modelForm.confirmpassword" clearable />
+        <FormItem label="确认密码" prop="confirmPassword">
+            <Input placeholder="请再次输入登陆密码" v-model="modelForm.confirmPassword" clearable />
         </FormItem>
     </Form>
 </template>
@@ -29,6 +29,7 @@
     } from '../../store/mutations';
 
     export default {
+        name: "userPassword",
         components: {
 
         },
@@ -42,10 +43,10 @@
 
                 modelForm: {
                     id: null,
-                    username: "",
-                    realname:"",
+                    userName: "",
+                    realName: "",
                     password: null,
-                    confirmpassword: null
+                    confirmPassword: null
                 },
                 modelFormRule: {
                     password: [{
@@ -53,7 +54,7 @@
                         validator: this.validateToNextPassword,
                         trigger: 'blur'
                     }],
-                    confirmpassword: [{
+                    confirmPassword: [{
                         required: true,
                         validator: this.compareToFirstPassword,
                         trigger: 'blur'
@@ -62,32 +63,31 @@
 
             }
         },
-        watch: {
-            id(newValue, oldValue) {
-                this.getUser(newValue);
-            }
-        },
         mounted() {
-
+            this.getUser();
         },
         methods: {
             getUser(id) {
 
                 var vm = this;
 
-                USER_QUERY_SERVICE({
-                    id: id
-                }).then(response => {
+                var id = this.id;
 
-                    if (response.success) {
-                        var result = response.result;
-                        if (!_.isNil(result)) {
-                            for (var item in this.modelForm) {
-                                this.modelForm[item] = result[item];
+                if (!_.isNil(id)) {
+                    USER_QUERY_SERVICE({
+                        id: id
+                    }).then(response => {
+
+                        if (response.success) {
+                            var result = response.result;
+                            if (!_.isNil(result)) {
+                                this.modelForm.id = result.id;
+                                this.modelForm.userName = result.userName;
+                                this.modelForm.realName = result.realName;
                             };
-                        };
-                    }
-                });
+                        }
+                    });
+                };
 
             },
             onChangePassword() {
@@ -136,7 +136,7 @@
                     callback("请输入登陆密码")
                 } else {
                     if (new RegExp(/(?=.*[a-z])(?=.*\d)(?=.*[#@!~%^&*])[a-z\d#@!~%^&*]{8,16}/i).test(value)) {
-                        this.$refs.modelForm.validateField('confirmpassword');
+                        this.$refs.modelForm.validateField('confirmPassword');
                         callback()
                     } else {
                         callback("密码长度8-16位，必须包含数字、字母、特殊符号");

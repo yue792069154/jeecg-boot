@@ -14,8 +14,7 @@
     import {
         ROLE_QUERY_SERVICE,
         ROLE_ADD_SERVICE,
-        ROLE_EDIT_SERVICE,
-        DUPLICATE_CHECK_SERVICE
+        ROLE_EDIT_SERVICE
     } from "../../axios/api";
     import {
         Poptip
@@ -25,6 +24,7 @@
     } from '../../store/mutations';
 
     export default {
+        name:"roleSave",
         components: {
 
         },
@@ -56,24 +56,15 @@
 
             }
         },
-        watch: {
-            id(newValue, oldValue) {
-                this.getRole(newValue);
-            }
-        },
         mounted() {
-
-            this.fileUploadHeaders = {
-                "X-Access-Token": Vue.ls.get(ACCESS_TOKEN)
-            };
-
+            this.getRole();
         },
         methods: {
-            getRole(id) {
+            getRole() {
 
-                var vm = this;
+                 var vm = this;
 
-                this.modelForm.id = id;
+                var id = this.id;
 
                 if (!_.isNil(id)) {
                     ROLE_QUERY_SERVICE({
@@ -121,12 +112,7 @@
 
                                 }
                             });
-
                         }
-
-
-
-
                     } else {
                         vm.$emit("on-save-error");
                     };

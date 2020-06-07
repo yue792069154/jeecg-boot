@@ -50,4 +50,7 @@ public class ${entityName} {
     @ApiModelProperty(value = "${po.filedComment}")
 	private <#if po.fieldType=='java.sql.Blob'>byte[]<#else>${po.fieldType}</#if> ${po.fieldName};
 	</#list>
+
+	@TableField(exist = false)
+    private String keyword;
 }
