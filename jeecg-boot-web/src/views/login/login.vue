@@ -60,6 +60,10 @@
                         this.$router.push('/system')
                     });
 
+                     this.$store.dispatch('menu').then(response => {
+
+            });
+
                    
                 }
 

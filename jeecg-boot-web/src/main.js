@@ -11,6 +11,9 @@ import 'xe-utils';
 import VXETable from 'vxe-table';
 import 'vxe-table/lib/index.css';
 
+
+
+
 Vue.use(Vuex);
 Vue.use(Storage);
 Vue.use(ViewUI);

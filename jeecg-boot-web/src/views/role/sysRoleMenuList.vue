@@ -28,9 +28,14 @@
             <vxe-table ref="modelTable" border stripe resizable highlight-current-row show-header-overflow show-overflow
                 highlight-hover-row :loading="modelTable.loading" :data="modelTable.data" row-key row-id="id"
                 :tree-config="{children: 'children', accordion: true, line: true, iconOpen: 'vxe-icon--caret-right rotate45', iconClose: 'vxe-icon--caret-right'}"
-                :checkbox-config="{labelField: 'menuName'}">
+                :checkbox-config="{labelField: 'menuName',checkStrictly:true}">
                 <vxe-table-column type="checkbox" field="menuName" title="菜单名称" tree-node></vxe-table-column>
-                <vxe-table-column field="menuCode" title="菜单编码" align="center"></vxe-table-column>
+                <vxe-table-column field="menuType" title="菜单类型" align="center">
+                    <template v-slot="{ row }">
+                        <Tag v-if="row.menuType=='0'" color="blue">菜单</Tag>
+                        <Tag v-if="row.menuType=='1'" color="volcano">目录</Tag>
+                    </template>
+                </vxe-table-column>
                 <vxe-table-column field="menuIconProtContent" title="菜单图标" width="80" align="center">
                     <template v-slot="{ row }">
                         <span :class="row.menuIconProtContent"></span>

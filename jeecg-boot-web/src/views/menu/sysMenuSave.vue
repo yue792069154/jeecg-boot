@@ -1,5 +1,12 @@
 <template>
     <Form label-position="top" ref="modelForm" :model="modelForm" :rules="modelFormRule">
+        <FormItem label="菜单类型" prop="menuType">
+            <Select placeholder="请选择菜单类型" v-model="modelForm.menuType">
+                <Option v-for="item in dict.menuType" :value="item.dictCode" :key="item.dictCode"
+                    :label="item.dictName">
+                </Option>
+            </Select>
+        </FormItem>
         <FormItem label="菜单名称" prop="menuName">
             <Input placeholder="请输入菜单名称" v-model="modelForm.menuName" clearable />
         </FormItem>
@@ -10,7 +17,7 @@
             <Input icon="ios-more" placeholder="请选择菜单图标" readonly v-model="modelForm.menuIconProtContent"
                 @on-click="onIconSelect" />
         </FormItem>
-        <FormItem label="菜单协议" prop="menuEntryProtCode">
+        <FormItem label="菜单协议" prop="menuEntryProtCode" v-if="modelForm.menuType==0">
             <Select placeholder="请选择菜单协议" v-model="modelForm.menuEntryProtCode">
                 <Option v-for="item in dict.menuEntryProtCode" :value="item.dictCode" :key="item.dictCode"
                     :label="item.dictName">
@@ -18,15 +25,15 @@
             </Select>
         </FormItem>
 
-        <FormItem label="路由地址" prop="menuRouteContent">
+        <FormItem label="路由地址" prop="menuRouteContent" v-if="modelForm.menuType==0">
             <Input placeholder="请输入路由地址" v-model="modelForm.menuRouteContent" clearable />
         </FormItem>
 
-        <FormItem label="菜单协议内容" prop="menuEntryProtContent">
+        <FormItem label="菜单协议内容" prop="menuEntryProtContent" v-if="modelForm.menuType==0">
             <Input placeholder="请输入菜单协议内容" type="textarea" :rows="6" v-model="modelForm.menuEntryProtContent"
                 clearable />
         </FormItem>
-        <FormItem label="菜单打开方式" prop="menuOpenTypeCode">
+        <FormItem label="菜单打开方式" prop="menuOpenTypeCode" v-if="modelForm.menuType==0">
             <Select placeholder="请选择菜单打开方式" v-model="modelForm.menuOpenTypeCode">
                 <Option v-for="item in dict.menuOpenTypeCode" :value="item.dictCode" :key="item.dictCode"
                     :label="item.dictName">
@@ -80,6 +87,7 @@
                     parentMenuId: null,
                     menuName: null,
                     menuCode: null,
+                    menuType: null,
                     menuIconProtContent: null,
                     menuEntryProtCode: null,
                     menuEntryProtContent: null,
@@ -97,12 +105,18 @@
                         required: true,
                         message: '请输入菜单编码',
                         trigger: 'change,blur'
+                    }],
+                    menuType: [{
+                        required: true,
+                        message: '请选择菜单类型',
+                        trigger: 'change,blur'
                     }]
                 },
 
                 dict: {
                     menuOpenTypeCode: [],
-                    menuEntryProtCode: []
+                    menuEntryProtCode: [],
+                    menuType: []
                 },
 
                 IconModal: false
@@ -155,6 +169,14 @@
                     };
                 });
 
+                DICT_LIST_BY_DICT_TYPE_CODE_SERVICE({
+                    dictTypeCode: "menuType"
+                }).then(response => {
+                    if (response.success) {
+                        vm.dict.menuType = response.result;
+                    };
+                });
+
             },
             onSaveMenu() {
 
@@ -164,8 +186,19 @@
                     if (valid) {
 
                         vm.modelForm.parentMenuId = vm.parentMenuId;
+                        var menuType = vm.modelForm.menuType;
+                        if (menuType == 1) {
+
+                            vm.modelForm.menuEntryProtCode = "";
+                            vm.modelForm.menuEntryProtContent = "";
+                            vm.modelForm.menuOpenTypeCode = "";
+                            vm.modelForm.menuRouteContent = "";
+
+                        };
 
                         if (_.isNil(vm.modelForm.id)) {
+
+
 
                             MENU_ADD_SERVICE(vm.modelForm).then(response => {
                                 if (response.success) {

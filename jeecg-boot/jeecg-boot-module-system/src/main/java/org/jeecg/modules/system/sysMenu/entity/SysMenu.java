@@ -34,6 +34,10 @@ public class SysMenu {
 	@Excel(name = "菜单名称", width = 15)
     @ApiModelProperty(value = "菜单名称")
 	private java.lang.String menuName;
+	/**菜单类型*/
+	@Excel(name = "菜单类型", width = 15)
+	@ApiModelProperty(value = "菜单类型")
+	private java.lang.String menuType;
 	/**菜单编码*/
 	@Excel(name = "菜单编码", width = 15)
     @ApiModelProperty(value = "菜单编码")

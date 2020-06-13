@@ -53,7 +53,7 @@ export const actions = {
                 var sessionMenuList = []; //路由菜单
 
                 _.forEach(menuList, function (item) {
-                    if (!_.isNil(item.menuEntryProtContent) && item.menuEntryProtContent != "") {
+                    if (item.menuType == 0) {
                         sessionMenuList.push(item);
                     }
                 });

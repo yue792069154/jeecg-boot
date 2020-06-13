@@ -14,7 +14,7 @@
                     <i-Menu mode="horizontal" :active-name="menuHeaderActiveName" ref="refMenu"
                         @on-select="onHeaderMenuSelect">
                         <Menu-Item :name="item.id" :key="index" v-for="(item,index) in menuList">
-                            <Icon :type="item.iconCls"></Icon>
+                            <Icon :type="item.menuIconProtContent"></Icon>
                             {{item.menuName}}
                         </Menu-Item>
                     </i-Menu>
@@ -33,7 +33,7 @@
             </div>
             <i-Content class="layout-content">
                 <div class="layout-content-window">
-                    <router-view></router-view>
+                    <page-View ref="pageView"></page-View>
                 </div>
             </i-Content>
         </layout>
@@ -54,12 +54,13 @@
     } from "../../../axios/api";
     import router from '../../../router';
     import Util from '../../../libs/util';
-
+    import pageView from '../../../components/page-view';
 
     export default {
         components: {
             siderMenu,
-            tagMenu
+            tagMenu,
+            pageView
         },
         data() {
             return {
@@ -130,8 +131,9 @@
             _openPage() {
 
                 var vm = this;
+                this.$refs.pageView.openPage(this.menuActive);
 
-                this.ss = this.menuActive;
+                //this.$router.push('/system/' + (this.menuActive.menuRouteContent || this.menuActive.id));
 
             },
             onHeaderMenuSelect(menuId) {
@@ -199,7 +201,6 @@
 
                 this.$nextTick(function () {
                     this.$refs.refMenu.updateActiveName();
-                    this.$router.push('/system/' + (this.menuActive.menuRouteContent||this.menuActive.id));
                 });
 
 

@@ -47,6 +47,13 @@
                 :checkbox-config="{labelField: 'menuName'}" @select-change="onTableCheckChange">
                 <vxe-table-column type="checkbox" field="menuName" title="菜单名称" width="260" tree-node>
                 </vxe-table-column>
+                 <vxe-table-column field="menuType" title="菜单类型" align="center"  width="120">
+                    <template v-slot="{ row }">
+                        <Tag v-if="row.menuType=='0'" color="blue">菜单</Tag>
+                        <Tag v-if="row.menuType=='1'" color="volcano">目录</Tag>
+                    </template>
+                </vxe-table-column>
+                 
                 <vxe-table-column field="menuCode" title="菜单编码" align="center"></vxe-table-column>
                 <vxe-table-column field="menuIconProtContent" title="菜单图标" width="120" align="center">
                     <template v-slot="{ row }">
