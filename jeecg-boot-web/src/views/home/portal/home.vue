@@ -5,6 +5,19 @@
                 <label v-text="topTitle"></label>
                 <label class="layout-tools-sub-title" v-if="topSubTitle != null || undefined"
                     v-text="topSubTitle"></label>
+                <div class="layout-tools-menu">
+                    <div class="layout-tools-menu-toolip">
+                        <label v-text="userName"></label>
+
+                    </div>
+                    <div class="layout-tools-menu-toolip">
+                        <Poptip transfer confirm title="确定退出登陆吗？" @on-ok="onLoginOut">
+                            <Icon type="md-log-out" />
+                            <label>退出登陆</label>
+                        </Poptip>
+
+                    </div>
+                </div>
             </div>
             <div class="layout-nav">
                 <div class="layout-nav-title">
@@ -43,13 +56,15 @@
 <script>
     import Vue from 'vue';
     import {
-        ACCESS_TOKEN
+        ACCESS_TOKEN,
+        USER_INFO
     } from '../../../store/mutations';
     import _ from 'lodash';
     import siderMenu from "../../../components/sider-menu";
     import tagMenu from "../../../components/tag-menu";
     import {
-        MENU_USER_LIST_SERVICE
+        MENU_USER_LIST_SERVICE,
+        LOGIN_OUT_SERVICE
     } from "../../../axios/api";
     import router from '../../../router';
     import pageView from '../../../components/page-view';
@@ -90,7 +105,8 @@
 
                 urlParams: {},
 
-                openInterface: null
+                openInterface: null,
+                userName: ""
 
             };
         },
@@ -100,6 +116,8 @@
 
         methods: {
             init() {
+
+                this.userName = Vue.ls.get(USER_INFO).realName + "，您好";
 
                 MENU_USER_LIST_SERVICE({
                     token: Vue.ls.get(ACCESS_TOKEN)
@@ -231,6 +249,16 @@
 
                 this.$refs.refTagMenu.onUpdateMenuView();
 
+            },
+            onLoginOut() {
+                LOGIN_OUT_SERVICE({}).then(response => {
+
+                    if (response.success) {
+                        Vue.ls.remove(ACCESS_TOKEN);
+                        this.$router.push('/');
+                    }
+
+                });
             }
         }
     };

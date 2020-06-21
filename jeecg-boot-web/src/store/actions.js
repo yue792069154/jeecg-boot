@@ -5,7 +5,7 @@ import {
 } from "../axios/api";
 import {
     ACCESS_TOKEN,
-    USER_MENU_LIST
+    USER_INFO
 } from "./mutations";
 import {
     Notice
@@ -22,7 +22,18 @@ export const actions = {
                 if (response.code == '200') {
                     const result = response.result;
                     Vue.ls.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000);
-                    commit('SET_TOKEN', result.token);
+                    Vue.ls.set(USER_INFO, result.userInfo, 7 * 24 * 60 * 60 * 1000);
+
+                    commit({
+                        type: "SET_TOKEN",
+                        token: result.token
+                    });
+
+                    commit({
+                        type: "SET_USER_INFO",
+                        userInfo: result.userInfo
+                    });
+
                     resolve(response);
                 } else if (response.code == '500') {
                     Notice.warning({
@@ -30,10 +41,10 @@ export const actions = {
                         desc: response.message,
                         duration: 4
                     });
-                    Vue.ls.set(ACCESS_TOKEN, null);
+                    Vue.ls.remove(ACCESS_TOKEN);
                     reject(response);
                 } else {
-                    Vue.ls.set(ACCESS_TOKEN, null);
+                    Vue.ls.remove(ACCESS_TOKEN);
                     reject(response);
                 }
             }).catch(error => {

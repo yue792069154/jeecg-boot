@@ -1,6 +1,7 @@
 export const ACCESS_TOKEN = 'Access-Token';
 export const ENCRYPTED_STRING = 'ENCRYPTED_STRING';
 export const USER_MENU_LIST = 'LOGIN_USER_MENU_LIST';
+export const USER_INFO = 'USER_INFO';
 
 export const mutations = {
     SET_TOKEN: (state, token) => {
@@ -12,4 +13,7 @@ export const mutations = {
     SET_MENU_COMPONENT(state, data) {
         state.menuComponent = data.menuComponent;
     },
+    SET_USER_INFO(state, data) {
+        state.userInfo = data.userInfo;
+    }
 };

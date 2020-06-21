@@ -8,6 +8,12 @@ import {
     MenuTypeEnum,
     MenuEntryProtEnum
 } from "./libs/fw-core/fw-constant/constant";
+import {
+    ACCESS_TOKEN
+} from './store/mutations';
+import {
+    ObjectUtils
+} from "./libs/fw-core/fw-util";
 
 Vue.use(VueRouter);
 Vue.use(ViewUI);
@@ -53,42 +59,45 @@ router.beforeEach((to, from, next) => {
 
     rootRoute = [];
 
-    store.dispatch('menu').then(response => {
-        _.forEach(response.result, function (item) {
-            if (item.menuType == MenuTypeEnum.MENU) {
+    var tocken = Vue.ls.get(ACCESS_TOKEN);
+    
+    if (ObjectUtils.hasValue(tocken)) {
+        store.dispatch('menu').then(response => {
+            _.forEach(response.result, function (item) {
+                if (item.menuType == MenuTypeEnum.MENU) {
 
-                systemRoute.children.push({
-                    path: (item.menuRouteContent || item.id),
-                    component: (resolve) => require([`${item.menuEntryProtContent}`], resolve)
-                });
+                    systemRoute.children.push({
+                        path: (item.menuRouteContent || item.id),
+                        component: (resolve) => require([`${item.menuEntryProtContent}`], resolve)
+                    });
 
-                rootRoute.push({
-                    path: "/" + (item.menuRouteContent || item.id),
-                    meta: {
-                        title: ''
-                    },
-                    component: (resolve) => require([`${item.menuEntryProtContent}`], resolve)
-                });
+                    rootRoute.push({
+                        path: "/" + (item.menuRouteContent || item.id),
+                        meta: {
+                            title: ''
+                        },
+                        component: (resolve) => require([`${item.menuEntryProtContent}`], resolve)
+                    });
 
-                if (item.menuEntryProtCode == MenuEntryProtEnum.COMPONENT) {
-                    routeComponent[item.id] = requireContext(item.menuEntryProtContent);
+                    if (item.menuEntryProtCode == MenuEntryProtEnum.COMPONENT) {
+                        routeComponent[item.id] = requireContext(item.menuEntryProtContent);
+                    }
+
                 }
+            });
 
-            }
+            rootRoute.push(systemRoute);
+
+            router.addRoutes(rootRoute);
+
+
+            store.commit({
+                type: "SET_MENU_COMPONENT",
+                menuComponent: routeComponent
+            });
+
         });
-
-        rootRoute.push(systemRoute);
-
-        router.addRoutes(rootRoute);
-
-
-        store.commit({
-            type: "SET_MENU_COMPONENT",
-            menuComponent: routeComponent
-        });
-
-    });
-
+    }
 
     next({
         to,

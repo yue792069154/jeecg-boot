@@ -6,7 +6,7 @@
             </div>
             <div class="login-form-item">
                 <Icon type="md-person" size="23" class="login-form-item-icon" />
-                <input class="login-form-item-input" v-on:blur="onInputBlur" v-model="loginForm.userName"
+                <input class="login-form-item-input" v-on:blur="onInputBlur" @keyup.enter="onLogin" v-model="loginForm.userName"
                     placeholder="请输入登陆用户账户" type="text">
                 <div class="login-form-item-error" v-if="showUserError">
                     请正确输入登陆用户账户
@@ -14,7 +14,7 @@
             </div>
             <div class="login-form-item">
                 <Icon type="md-lock" size="23" class="login-form-item-icon" />
-                <input class="login-form-item-input" v-on:blur="onInputBlur" v-model="loginForm.password"
+                <input class="login-form-item-input" v-on:blur="onInputBlur" @keyup.enter="onLogin" v-model="loginForm.password"
                     placeholder="请输入登陆用户密码" type="password">
                 <div class="login-form-item-error" v-if="showPasswordError">
                     请正确输入登陆用户密码
@@ -22,7 +22,7 @@
             </div>
             <div class="login-form-item">
                 <Icon type="md-barcode" size="23" class="login-form-item-icon" />
-                <input class="login-form-item-input" v-on:blur="onInputBlur" v-model="loginForm.captcha"
+                <input class="login-form-item-input" v-on:blur="onInputBlur" @keyup.enter="onLogin" v-model="loginForm.captcha"
                     placeholder="请输入验证码" type="text">
                 <verification-code class="login-form-item-code" :remote="true" ref="verificationCode">
                 </verification-code>
