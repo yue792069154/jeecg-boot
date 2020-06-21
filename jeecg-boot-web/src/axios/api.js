@@ -3,7 +3,7 @@ import {
     deleteAction,
     putAction,
     postAction
-} from './action';
+} from '../libs/fw-core/fw-request/action';
 
 import appSettings from "../common/appSettings";
 

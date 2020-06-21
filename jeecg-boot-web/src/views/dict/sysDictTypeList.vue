@@ -1,5 +1,5 @@
 <template>
-    <table-pannel ref="tablePannel" @on-ok="onOk" @on-cancel="onCancel"  :show-ok-button="showOkButton">
+    <table-pannel ref="tablePannel" @on-ok="onOk" @on-cancel="onCancel" :show-ok-button="showOkButton">
         <slot slot="alert">
             <Alert show-icon>字典管理，支持EXCEL导入、导出、添加字典、删除字典等功能</Alert>
         </slot>
@@ -7,8 +7,15 @@
             <table>
                 <tr>
                     <td>
+                        <Select clearable @on-change="onSearch"  placeholder="请选择字典类型分组" v-model="modelTable.filter.dictTypeGroup" style="width:166px">
+                            <Option v-for="item in dict.dictTypeGroup" :value="item.dictCode" :key="item.dictCode"
+                                :label="item.dictName">
+                            </Option>
+                        </Select>
+                    </td>
+                    <td>
                         <Select clearable @on-change="onSearch" v-model="modelTable.filter.statusCode"
-                            placeholder="请选择字典类型状态" style="width:140px">
+                            placeholder="请选择字典类型状态" style="width:166px">
                             <Option value="0">正常</Option>
                             <Option value="1">停用</Option>
                         </Select>
@@ -112,7 +119,8 @@
         DICT_TYPT_LIST_SERVICE,
         DICT_TYPT_DELETE_SERVICE,
         DICT_TYPT_DELETE_BATCH_SERVICE,
-        DICT_TYPT_BATCH_SERVICE
+        DICT_TYPT_BATCH_SERVICE,
+        DICT_LIST_BY_DICT_TYPE_CODE_SERVICE
     } from "../../axios/api";
     import {
         Poptip
@@ -140,20 +148,25 @@
                     },
                     select: [],
                     filter: {
+                        dictTypeGroup:"",
                         statusCode: "",
                         keyword: ""
                     },
                     loading: false
                 },
+                dict: {
+                    dictTypeGroup: []
+                },
 
                 currentComponent: "",
                 currentComponentKey: "",
 
-                showOkButton:false
+                showOkButton: false
 
             }
         },
         mounted() {
+             this.getDict();
             this.getDictTypeList();
         },
         methods: {
@@ -186,9 +199,23 @@
                 });
 
             },
+            getDict() {
+
+                var vm = this;
+
+                DICT_LIST_BY_DICT_TYPE_CODE_SERVICE({
+                    dictTypeCode: "dictTypeGroup"
+                }).then(response => {
+                    if (response.success) {
+                        vm.dict.dictTypeGroup = response.result;
+                    };
+                });
+
+
+            },
             onAddDictType() {
 
-                this.showOkButton=true;
+                this.showOkButton = true;
 
                 this.currentComponent = dictTypeSave;
                 this.currentComponentKey = null;
@@ -201,7 +228,7 @@
             },
             onEditDictType(dictType) {
 
-                this.showOkButton=true;
+                this.showOkButton = true;
 
                 this.currentComponent = dictTypeSave;
                 this.currentComponentKey = dictType.id;
@@ -214,7 +241,7 @@
             },
             onEditDict(dictType) {
 
-                this.showOkButton=false;
+                this.showOkButton = false;
 
                 this.currentComponent = dictList;
                 this.currentComponentKey = dictType.id;
@@ -229,7 +256,7 @@
 
                 this.$refs.tablePannel.showLoading = true;
                 this.$refs.drawerComponent.onSaveDictType();
-                
+
             },
             onCancel() {
 

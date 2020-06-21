@@ -35,6 +35,7 @@
                 <div class="layout-content-window">
                     <page-View ref="pageView"></page-View>
                 </div>
+
             </i-Content>
         </layout>
     </div>
@@ -47,15 +48,12 @@
     import _ from 'lodash';
     import siderMenu from "../../../components/sider-menu";
     import tagMenu from "../../../components/tag-menu";
-    import TreeImpl from "../../../libs/tree";
-    import Qs from "../../../libs/qs";
     import {
         MENU_USER_LIST_SERVICE
     } from "../../../axios/api";
     import router from '../../../router';
-    import Util from '../../../libs/util';
     import pageView from '../../../components/page-view';
-
+    import TreeImpl from '../../../libs/fw-core/fw-tree/tree';
     export default {
         components: {
             siderMenu,
@@ -97,13 +95,9 @@
             };
         },
         mounted() {
-
-            this.$store.dispatch('menu').then(response => {
-
-            });
-
             this.init();
         },
+
         methods: {
             init() {
 
@@ -132,6 +126,7 @@
 
                 var vm = this;
                 this.$refs.pageView.openPage(this.menuActive);
+
 
                 //this.$router.push('/system/' + (this.menuActive.menuRouteContent || this.menuActive.id));
 

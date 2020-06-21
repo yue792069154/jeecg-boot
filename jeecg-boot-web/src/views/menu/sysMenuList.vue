@@ -5,7 +5,7 @@
         </slot>
         <slot slot="filter">
             <table>
-                 <tr>
+                <tr>
                     <td>
                         <Select clearable @on-change="onSearch" v-model="modelTable.filter.statusCode"
                             placeholder="请选择菜单状态" style="width:140px">
@@ -47,33 +47,33 @@
                 :checkbox-config="{labelField: 'menuName'}" @select-change="onTableCheckChange">
                 <vxe-table-column type="checkbox" field="menuName" title="菜单名称" width="260" tree-node>
                 </vxe-table-column>
-                 <vxe-table-column field="menuType" title="菜单类型" align="center"  width="120">
+                <vxe-table-column field="menuType" title="菜单类型" align="center" width="120">
                     <template v-slot="{ row }">
                         <Tag v-if="row.menuType=='0'" color="blue">菜单</Tag>
                         <Tag v-if="row.menuType=='1'" color="volcano">目录</Tag>
                     </template>
                 </vxe-table-column>
-                 
+
                 <vxe-table-column field="menuCode" title="菜单编码" align="center"></vxe-table-column>
                 <vxe-table-column field="menuIconProtContent" title="菜单图标" width="120" align="center">
                     <template v-slot="{ row }">
                         <span :class="row.menuIconProtContent"></span>
                     </template>
                 </vxe-table-column>
-                <vxe-table-column field="statusCode" title="状态" align="center"  width="120">
+                <vxe-table-column field="statusCode" title="状态" align="center" width="120">
                     <template v-slot="{ row }">
                         <Tag v-if="row.statusCode=='0'" color="success">正常</Tag>
                         <Tag v-if="row.statusCode=='1'" color="warning">停用</Tag>
                     </template>
                 </vxe-table-column>
-                <vxe-table-column field="sort" title="菜单顺序" align="right"  width="80"> </vxe-table-column>
+                <vxe-table-column field="sort" title="菜单顺序" align="right" width="80"> </vxe-table-column>
                 <vxe-table-column field="action" title="操作" align="center">
                     <template v-slot="{ row }">
                         <a href="javascript:void(0)" @click="onEditMenu(row)">
                             编辑
                         </a>
                         <Divider type="vertical" />
-                         <a href="javascript:void(0)" @click="onAddChildMenu(row)">
+                        <a href="javascript:void(0)" @click="onAddChildMenu(row)">
                             添加子菜单
                         </a>
                         <Divider type="vertical" />
@@ -131,7 +131,7 @@
     import Treeselect from '@riophae/vue-treeselect';
     import '@riophae/vue-treeselect/dist/vue-treeselect.css';
     import menuSave from './sysMenuSave';
-    import TreeImpl from "../../libs/tree";
+    import TreeImpl from '../../libs/fw-core/fw-tree/tree';
 
     export default {
         components: {
@@ -195,6 +195,7 @@
 
             },
             onAddMenu() {
+
 
                 this.currentComponent = menuSave;
                 this.currentComponentKey = null;

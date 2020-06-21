@@ -1,5 +1,12 @@
 <template>
     <Form label-position="top" ref="modelForm" :model="modelForm" :rules="modelFormRule">
+        <FormItem label="字典类型分组" prop="dictTypeGroup">
+            <Select placeholder="请选择字典类型分组" v-model="modelForm.dictTypeGroup">
+                <Option v-for="item in dict.dictTypeGroup" :value="item.dictCode" :key="item.dictCode"
+                    :label="item.dictName">
+                </Option>
+            </Select>
+        </FormItem>
         <FormItem label="字典类型名称" prop="dictTypeName">
             <Input placeholder="请输入字典类型名称" v-model="modelForm.dictTypeName" clearable />
         </FormItem>
@@ -23,7 +30,8 @@
     import {
         DICT_TYPT_QUERY_SERVICE,
         DICT_TYPT_ADD_SERVICE,
-        DICT_TYPT_EDIT_SERVICE
+        DICT_TYPT_EDIT_SERVICE,
+        DICT_LIST_BY_DICT_TYPE_CODE_SERVICE
     } from "../../axios/api";
 
     export default {
@@ -38,6 +46,7 @@
 
                 modelForm: {
                     id: null,
+                    dictTypeGroup: null,
                     dictTypeName: null,
                     dictTypeCode: null,
                     extendTableName: null,
@@ -45,20 +54,29 @@
                     sort: 1
                 },
                 modelFormRule: {
+                    dictTypeGroup: [{
+                        required: true,
+                        message: '请选择字典类型分组',
+                        trigger: 'change,blur'
+                    }],
                     dictTypeName: [{
                         required: true,
-                        message: '请输入字典名称',
+                        message: '请输入字典类型名称',
                         trigger: 'change,blur'
                     }],
                     dictTypeCode: [{
                         required: true,
-                        message: '请输入字典编码',
+                        message: '请输入字典类型编码',
                         trigger: 'blur'
                     }]
+                },
+                dict: {
+                    dictTypeGroup: []
                 }
             }
         },
         mounted() {
+            this.getDict();
             this.getDictType();
         },
         methods: {
@@ -83,6 +101,20 @@
                         }
                     });
                 };
+            },
+            getDict() {
+
+                var vm = this;
+
+                DICT_LIST_BY_DICT_TYPE_CODE_SERVICE({
+                    dictTypeCode: "dictTypeGroup"
+                }).then(response => {
+                    if (response.success) {
+                        vm.dict.dictTypeGroup = response.result;
+                    };
+                });
+
+
             },
             onSaveDictType() {
 

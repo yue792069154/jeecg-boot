@@ -6,6 +6,16 @@
         <FormItem label="角色编码" prop="roleCode">
             <Input placeholder="请输入角色编码" v-model="modelForm.roleCode" clearable />
         </FormItem>
+         <FormItem label="角色入口协议" prop="roleEntryProtCode">
+            <Select placeholder="请选择角色入口协议" v-model="modelForm.roleEntryProtCode">
+                <Option v-for="item in dict.roleEntryProtCode" :value="item.dictCode" :key="item.dictCode"
+                    :label="item.dictName">
+                </Option>
+            </Select>
+        </FormItem>
+         <FormItem label="角色入口" prop="roleEntryProtContent">
+            <Input placeholder="请输入角色入口" type="textarea" :rows="6" v-model="modelForm.roleEntryProtContent" clearable />
+        </FormItem>
     </Form>
 </template>
 <script>
@@ -14,7 +24,8 @@
     import {
         ROLE_QUERY_SERVICE,
         ROLE_ADD_SERVICE,
-        ROLE_EDIT_SERVICE
+        ROLE_EDIT_SERVICE,
+        DICT_LIST_BY_DICT_TYPE_CODE_SERVICE
     } from "../../axios/api";
     import {
         Poptip
@@ -39,7 +50,9 @@
                 modelForm: {
                     id: null,
                     roleName: null,
-                    roleCode: null
+                    roleCode: null,
+                    roleEntryProtCode:null,
+                    roleEntryProtContent:null
                 },
                 modelFormRule: {
                     roleName: [{
@@ -52,11 +65,15 @@
                         message: '请输入角色编码',
                         trigger: 'change,blur'
                     }]
+                },
+                dict: {
+                    roleEntryProtCode: []
                 }
 
             }
         },
         mounted() {
+            this.getDict();
             this.getRole();
         },
         methods: {
@@ -81,6 +98,19 @@
                         }
                     });
                 };
+            },
+            getDict() {
+
+                var vm = this;
+
+                DICT_LIST_BY_DICT_TYPE_CODE_SERVICE({
+                    dictTypeCode: "menuEntryProt"
+                }).then(response => {
+                    if (response.success) {
+                        vm.dict.roleEntryProtCode = response.result;
+                    };
+                });
+
             },
             onSaveRole() {
 

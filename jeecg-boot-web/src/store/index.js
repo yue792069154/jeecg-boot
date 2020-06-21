@@ -10,7 +10,8 @@ Vue.use(Vuex);
 export default new Vuex.Store({
     state: {
         token: "",
-        userMenuList:[]
+        userMenuList:[],
+        menuComponent:{}
     },
     getters,
     mutations,

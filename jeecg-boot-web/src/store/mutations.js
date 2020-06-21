@@ -8,5 +8,8 @@ export const mutations = {
     },
     SET_USER_MENU_LIST: (state, menuList) => {
         state.userMenuList = menuList;
-    }
+    },
+    SET_MENU_COMPONENT(state, data) {
+        state.menuComponent = data.menuComponent;
+    },
 };

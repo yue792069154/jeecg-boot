@@ -38,6 +38,7 @@
                 <vxe-table-column type="checkbox" width="60" align="center"></vxe-table-column>
                 <vxe-table-column field="roleName" title="角色名称"></vxe-table-column>
                 <vxe-table-column field="roleCode" title="角色编码"></vxe-table-column>
+                <vxe-table-column field="roleEntryProtContent" title="角色入口"></vxe-table-column>
                 <vxe-table-column field="action" title="操作" align="center">
                     <template v-slot="{ row }">
                         <a href="javascript:void(0)" @click="onEditRole(row)">

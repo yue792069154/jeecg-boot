@@ -34,6 +34,14 @@ public class SysRole {
 	@Excel(name = "角色名称", width = 15)
     @ApiModelProperty(value = "角色名称")
 	private java.lang.String roleName;
+	/**角色入口协议类型编码*/
+	@Excel(name = "角色入口协议类型编码", width = 15)
+	@ApiModelProperty(value = "角色入口协议类型编码")
+	private java.lang.String roleEntryProtCode;
+	/**角色入口协议内容*/
+	@Excel(name = "角色入口协议内容", width = 15)
+	@ApiModelProperty(value = "角色入口协议内容")
+	private java.lang.String roleEntryProtContent;
 	/**角色编码*/
 	@Excel(name = "角色编码", width = 15)
     @ApiModelProperty(value = "角色编码")

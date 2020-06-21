@@ -185,7 +185,7 @@
                 this.$refs['modelForm'].validate((valid) => {
                     if (valid) {
 
-                        vm.modelForm.parentMenuId = vm.parentMenuId;
+                        vm.modelForm.parentMenuId = vm.parentMenuId || vm.modelForm.parentMenuId;
                         var menuType = vm.modelForm.menuType;
                         if (menuType == 1) {
 

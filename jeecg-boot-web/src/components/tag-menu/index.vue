@@ -42,7 +42,7 @@
 </template>
 <script>
     import _ from 'lodash';
-     import TreeImpl from "../../libs/tree";
+     import TreeImpl from '../../libs/fw-core/fw-tree/tree'; 
 
     export default {
         name: "tagMenu",

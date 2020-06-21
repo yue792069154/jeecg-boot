@@ -53,12 +53,14 @@ public class SysDictTypeController extends JeecgController<SysDictType, ISysDict
 
 		String keyword=httpServletRequest.getParameter("keyword");
 		String statusCode=httpServletRequest.getParameter("statusCode");
+		String dictTypeGroup=httpServletRequest.getParameter("dictTypeGroup");
 		QueryWrapper<SysDictType> queryWrapper =new QueryWrapper<>();
 		queryWrapper
 				.like(!StringUtil.isNullOrEmpty(keyword),"dict_type_name",keyword)
 				.or()
 				.like(!StringUtil.isNullOrEmpty(keyword),"dict_type_code",keyword)
 				.eq(!StringUtil.isNullOrEmpty(statusCode),"status_code",statusCode)
+				.eq(!StringUtil.isNullOrEmpty(dictTypeGroup),"dict_type_group",dictTypeGroup)
 				.orderByAsc("sort");
 		Page<SysDictType> page = new Page<SysDictType>(pageNo, pageSize);
 		IPage<SysDictType> pageList = sysDictTypeService.page(page, queryWrapper);

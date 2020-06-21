@@ -124,7 +124,8 @@ public class SysLoginController {
 	    	return Result.error("Token无效!");
 	    }
 	}
-	
+
+
 	/**
 	 * 获取访问量
 	 * @return

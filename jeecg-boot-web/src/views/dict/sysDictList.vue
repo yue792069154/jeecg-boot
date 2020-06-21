@@ -128,6 +128,8 @@
     import {
         Poptip
     } from 'view-design';
+    import ResultStatusEnum from '../../libs/fw-core/fw-constant/constant';
+
     export default {
         name: "dictList",
         components: {
@@ -152,7 +154,7 @@
                     },
                     select: [],
                     filter: {
-                         statusCode: "",
+                        statusCode: "",
                         keyword: ""
                     },
                     loading: false
@@ -180,6 +182,14 @@
                 })).then(response => {
 
                     var result = response.result;
+
+                    
+                    // if (resultData.status == ResultStatusEnum.SUCCESS && ObjectUtils.hasValue(resultData.data)) {
+                                
+                    //         }
+                   // if(response.code==ResultStatusEnum.SUCCESS&&)
+
+                    
 
                     if (!_.isNil(result)) {
                         this.modelTable.data = result.records || [];

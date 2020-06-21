@@ -1,12 +1,10 @@
 import Vue from 'vue';
 import axios from 'axios';
 import {
-    ACCESS_TOKEN
-} from '../store/mutations';
-
-import {
     Notice
 } from 'view-design';
+
+const ACCESS_TOKEN = 'Access-Token';
 
 const service = axios.create({
     timeout: 60000

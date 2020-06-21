@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import {
     downLoadFileAction
-} from '../axios/action';
+} from '../libs/fw-core/fw-request/action';
 import {
     Message
 } from 'view-design';

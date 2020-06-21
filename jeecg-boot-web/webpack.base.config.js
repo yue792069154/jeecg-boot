@@ -18,7 +18,7 @@ module.exports = {
                         options: {
                             loaders: {
                                 less: ExtractTextPlugin.extract({
-                                    use: ['css-loader?minimize', 'autoprefixer-loader', 'less-loader'],
+                                    use: ['css-loader', 'autoprefixer-loader', 'less-loader'],
                                     fallback: 'vue-style-loader'
                                 }),
                                 css: ExtractTextPlugin.extract({
@@ -48,19 +48,17 @@ module.exports = {
             {
                 test: /\.css$/,
                 use: ExtractTextPlugin.extract({
-                    use: ['css-loader?minimize', 'autoprefixer-loader'],
+                    use: ['css-loader', 'autoprefixer-loader'],
                     fallback: 'style-loader'
                 })
             },
-
             {
                 test: /\.less/,
                 use: ExtractTextPlugin.extract({
-                    use: ['autoprefixer-loader', 'less-loader'],
+                    use: ['css-loader', 'autoprefixer-loader', 'less-loader'],
                     fallback: 'style-loader'
                 })
             },
-
             {
                 test: /\.(gif|jpg|png|woff|svg|eot|ttf)\??.*$/,
                 loader: 'url-loader?limit=1024'
@@ -76,5 +74,6 @@ module.exports = {
         alias: {
             'vue': 'vue/dist/vue.esm.js'
         }
+       
     }
 };

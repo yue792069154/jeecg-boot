@@ -63,7 +63,7 @@
         ROLE_MENU_ADD_SERVICE,
         ROLE_MENU_DELETE_SERVICE
     } from "../../axios/api";
-    import TreeImpl from "../../libs/tree";
+    import TreeImpl from '../../libs/fw-core/fw-tree/tree';
     export default {
         name: "roleMenuList",
         components: {
@@ -127,7 +127,8 @@
 
                                 var checkList = [];
                                 _.forEach(result, function (menu) {
-                                    checkList.push(vm.$refs.modelTable.getRowById(menu.menuId));
+                                    checkList.push(vm.$refs.modelTable.getRowById(menu
+                                        .menuId));
                                 });
 
                                 vm.$refs.modelTable.setCheckboxRow(checkList, true);

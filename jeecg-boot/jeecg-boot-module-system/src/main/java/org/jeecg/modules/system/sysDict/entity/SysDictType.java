@@ -36,8 +36,12 @@ public class SysDictType {
 	private java.lang.String dictTypeName;
 	/**字典类型编码*/
 	@Excel(name = "字典类型编码", width = 15)
-    @ApiModelProperty(value = "字典类型编码")
+	@ApiModelProperty(value = "字典类型编码")
 	private java.lang.String dictTypeCode;
+	/**字典类型分組*/
+	@Excel(name = "字典类型分組", width = 15)
+	@ApiModelProperty(value = "字典类型分組")
+	private java.lang.String dictTypeGroup;
 	/**扩展表名称*/
 	@Excel(name = "扩展表名称", width = 15)
     @ApiModelProperty(value = "扩展表名称")

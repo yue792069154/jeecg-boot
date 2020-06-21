@@ -12,6 +12,7 @@ import {
 } from 'view-design';
 import _ from 'lodash';
 
+
 export const actions = {
     login: ({
         commit
@@ -48,20 +49,7 @@ export const actions = {
             MENU_USER_LIST_SERVICE({
                 token: Vue.ls.get(ACCESS_TOKEN)
             }).then(response => {
-
-                var menuList = response.result;
-                var sessionMenuList = []; //路由菜单
-
-                _.forEach(menuList, function (item) {
-                    if (item.menuType == 0) {
-                        sessionMenuList.push(item);
-                    }
-                });
-                sessionStorage.setItem(USER_MENU_LIST, JSON.stringify(sessionMenuList));
-                commit('SET_USER_MENU_LIST', sessionMenuList);
-
-                reject(sessionMenuList);
-
+                resolve(response);
             }).catch(error => {
                 reject(error);
             });
