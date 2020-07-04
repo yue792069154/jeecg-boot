@@ -52,10 +52,9 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 	/**
 	 * 分页列表查询
 	 *
-	 * @param ${entityName?uncap_first}
+	 * @param httpServletRequest
 	 * @param pageNo
 	 * @param pageSize
-	 * @param req
 	 * @return
 	 */
 	@AutoLog(value = "${tableVo.ftlDescription}-分页列表查询")
@@ -66,7 +65,6 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize) {
 
 		String keyword=httpServletRequest.getParameter("keyword");
-        String statusCode=httpServletRequest.getParameter("statusCode");
 
 		QueryWrapper<${entityName}> queryWrapper = new QueryWrapper<>();
 

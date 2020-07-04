@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.system.sysAuth.mapper.SysAuthMapper">
+
+
+    <select id="queryList" parameterType="Object" resultType="org.jeecg.modules.system.sysAuth.entity.SysAuth">
+        SELECT
+        t1.*,
+        group_concat( t2.role_id ) sysRoleIds
+        FROM
+        sys_auth t1
+        LEFT JOIN sys_role_auth t2 ON t1.id = t2.auth_id
+        WHERE
+        t1.delete_code = '0'
+
+        <if test="sysAuth.keyword != null and sysAuth.keyword != ''">
+            AND t1.user_name LIKE '%${sysAuth.keyword}%' or  t1.real_name LIKE '%${sysAuth.keyword}%'
+        </if>
+        <if test="sysAuth.statusCode != null and sysAuth.statusCode != ''">
+            AND t1.status_code = #{sysUser.statusCode}
+        </if>
+
+        GROUP BY
+        t1.auth_name
+    </select>
+
+
+    <select id="getAuthListByUserName" parameterType="Object" resultType="org.jeecg.modules.system.sysAuth.entity.SysAuth">
+		   	 SELECT p.*
+		   FROM  sys_auth p
+		   WHERE exists(
+		   		select a.id from sys_role_auth a
+		   		join sys_role b on a.role_id = b.id
+		   		join sys_user_role c on c.role_id = b.id
+		   		join sys_user d on d.id = c.user_id
+		   		where p.id = a.auth_id AND d.user_name = #{userName}
+		   )
+		    and p.status_code = 0 and p.delete_code = 0
+		   order by p.sort ASC
+
+	</select>
+
+</mapper>

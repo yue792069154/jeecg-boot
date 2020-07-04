@@ -46,6 +46,9 @@ const ROLE_MENU_DELETE_SERVICE = (params) => postAction("/sys/sysRoleMenu/delete
 const ROLE_ADD_USER_SERVICE = (params) => postAction("/sys/sysUserRole/add", appSettings.jeecg.serviceSiteRootUrl, params);
 const ROLE_DELETE_USER_SERVICE = (params) => deleteAction("/sys/sysUserRole/delete", appSettings.jeecg.serviceSiteRootUrl, params);
 
+//角色绑定功能
+const ROLE_ADD_AUTH_SERVICE = (params) => postAction("/sys/sysRoleAuth/add", appSettings.jeecg.serviceSiteRootUrl, params);
+const ROLE_DELETE_AUTH_SERVICE = (params) => deleteAction("/sys/sysRoleAuth/delete", appSettings.jeecg.serviceSiteRootUrl, params);
 
 //菜单
 const MENU_LIST_SERVICE = (params) => getAction("/sys/sysMenu/list", appSettings.jeecg.serviceSiteRootUrl, params);
@@ -76,6 +79,19 @@ const DICT_DELETE_SERVICE = (params) => deleteAction("/sys/sysDict/delete", appS
 const DICT_DELETE_BATCH_SERVICE = (params) => deleteAction("/sys/sysDict/deleteBatch", appSettings.jeecg.serviceSiteRootUrl, params);
 const DICT_LIST_BY_DICT_TYPE_CODE_SERVICE = (params) => getAction("/sys/sysDict/getDictByDictTypeCode", appSettings.jeecg.serviceSiteRootUrl, params);
 const DICT_BATCH_SERVICE = (params) => getAction("/sys/sysDict/frozenBatch", appSettings.jeecg.serviceSiteRootUrl, params);
+
+
+//权限
+const AUTH_ALL_LIST_SERVICE = (params) => postAction("/sys/sysAuth/queryall", appSettings.jeecg.serviceSiteRootUrl, params);
+const AUTH_LIST_SERVICE = (params) => getAction("/sys/sysAuth/list", appSettings.jeecg.serviceSiteRootUrl, params);
+const AUTH_ADD_SERVICE = (params) => postAction("/sys/sysAuth/add", appSettings.jeecg.serviceSiteRootUrl, params);
+const AUTH_EDIT_SERVICE = (params) => putAction("/sys/sysAuth/edit", appSettings.jeecg.serviceSiteRootUrl, params);
+const AUTH_QUERY_SERVICE = (params) => getAction("/sys/sysAuth/queryById", appSettings.jeecg.serviceSiteRootUrl, params);
+const AUTH_DELETE_SERVICE = (params) => deleteAction("/sys/sysAuth/delete", appSettings.jeecg.serviceSiteRootUrl, params);
+const AUTH_DELETE_BATCH_SERVICE = (params) => deleteAction("/sys/sysAuth/deleteBatch", appSettings.jeecg.serviceSiteRootUrl, params);
+const AUTH_BATCH_SERVICE = (params) => getAction("/sys/sysAuth/frozenBatch", appSettings.jeecg.serviceSiteRootUrl, params);
+const AUTH_USER_LIST_SERVICE = (params) => getAction("/sys/sysAuth/getAuthListByTocken", appSettings.jeecg.serviceSiteRootUrl, params);
+
 
 //日志
 const LOG_LIST_SERVICE = (params) => getAction("/sys/log/list", appSettings.jeecg.serviceSiteRootUrl, params);
@@ -126,6 +142,11 @@ export {
     ROLE_DELETE_USER_SERVICE,
 
 
+    //角色绑定功能
+    ROLE_ADD_AUTH_SERVICE,
+    ROLE_DELETE_AUTH_SERVICE,
+
+
     //菜单
     MENU_LIST_SERVICE,
     MENU_ALL_LIST_SERVICE,
@@ -155,6 +176,18 @@ export {
     DICT_DELETE_BATCH_SERVICE,
     DICT_LIST_BY_DICT_TYPE_CODE_SERVICE,
     DICT_BATCH_SERVICE,
+
+    //权限
+    AUTH_ALL_LIST_SERVICE,
+    AUTH_LIST_SERVICE,
+    AUTH_ADD_SERVICE,
+    AUTH_EDIT_SERVICE,
+    AUTH_QUERY_SERVICE,
+    AUTH_DELETE_SERVICE,
+    AUTH_DELETE_BATCH_SERVICE,
+    AUTH_BATCH_SERVICE,
+    AUTH_USER_LIST_SERVICE,
+
 
     //日志
     LOG_LIST_SERVICE,

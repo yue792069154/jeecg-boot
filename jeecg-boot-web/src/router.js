@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import home from './views/home/portal/home';
+import home from './views/sysManage/sysHome/portal/home';
 import ViewUI from 'view-design';
 import store from './store/index';
 import _ from 'lodash';
@@ -29,8 +29,13 @@ const routers = [{
     meta: {
         title: ''
     },
-    component: (resolve) => require(['./views/login/login.vue'], resolve)
+    component: (resolve) => require(['./views/sysManage/sysLogin/login.vue'], resolve)
 }];
+
+// , {
+//     path: "*",
+//     component: (resolve) => require(['./views/error/404.vue'], resolve)
+// }
 
 var router = new VueRouter({
     mode: 'history',
@@ -51,6 +56,8 @@ var systemRoute = {
 var rootRoute = [];
 var routeComponent = {};
 
+var authList = [];
+
 const requireContext = require.context("./", true, /^\.\/views\/.*\.vue$/);
 
 router.beforeEach((to, from, next) => {
@@ -60,7 +67,7 @@ router.beforeEach((to, from, next) => {
     rootRoute = [];
 
     var tocken = Vue.ls.get(ACCESS_TOKEN);
-    
+
     if (ObjectUtils.hasValue(tocken)) {
         store.dispatch('menu').then(response => {
             _.forEach(response.result, function (item) {
@@ -97,6 +104,12 @@ router.beforeEach((to, from, next) => {
             });
 
         });
+        store.dispatch('auth').then(response => {
+            authList = [];
+            _.forEach(response.result, function (item) {
+                authList.push(item.authCode);
+            });
+        });
     }
 
     next({
@@ -109,6 +122,16 @@ router.beforeEach((to, from, next) => {
 router.afterEach(() => {
     ViewUI.LoadingBar.finish();
     window.scrollTo(0, 0);
+});
+
+Vue.directive('auth', {
+    inserted: (el, binding, vnode) => {
+        if (ObjectUtils.hasValue(binding.value)) {
+            if (!ObjectUtils.hasValue(_.intersection(authList, binding.value))) {
+                el.parentNode.removeChild(el);
+            }
+        }
+    }
 });
 
 export default router;

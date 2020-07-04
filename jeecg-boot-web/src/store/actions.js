@@ -1,7 +1,8 @@
 import Vue from 'vue';
 import {
     LOGIN_SERVICE,
-    MENU_USER_LIST_SERVICE
+    MENU_USER_LIST_SERVICE,
+    AUTH_USER_LIST_SERVICE
 } from "../axios/api";
 import {
     ACCESS_TOKEN,
@@ -58,6 +59,20 @@ export const actions = {
     }) => {
         return new Promise((resolve, reject) => {
             MENU_USER_LIST_SERVICE({
+                token: Vue.ls.get(ACCESS_TOKEN)
+            }).then(response => {
+                resolve(response);
+            }).catch(error => {
+                reject(error);
+            });
+        });
+
+    },
+    auth: ({
+        commit
+    }) => {
+        return new Promise((resolve, reject) => {
+            AUTH_USER_LIST_SERVICE({
                 token: Vue.ls.get(ACCESS_TOKEN)
             }).then(response => {
                 resolve(response);
