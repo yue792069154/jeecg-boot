@@ -30,9 +30,10 @@
                     <td>
                         <Button type="primary" @click="onAddUser" v-auth="['sysUser:add']">添加用户</Button>
                     </td>
-                    <td >
+                    <td>
                         <Poptip transfer confirm title="确定删除吗？" @on-ok="onDeleteBatchUser">
-                            <Button v-auth="['sysUser:delete']" type="error" ghost :disabled="this.modelTable.select<=0">批量删除</Button>
+                            <Button v-auth="['sysUser:delete']" type="error" ghost
+                                :disabled="this.modelTable.select<=0">批量删除</Button>
                         </Poptip>
                     </td>
 
@@ -76,7 +77,7 @@
                                 <div @click="onChangePassword(row)" v-auth="['sysUser:updatePassword']">
                                     <DropdownItem>重设密码</DropdownItem>
                                 </div>
-                                <div  v-auth="['sysUser:frozen']">
+                                <div v-auth="['sysUser:frozen']">
                                     <Poptip v-if="row.statusCode=='0'" transfer confirm title="确定冻结吗？"
                                         @on-ok="onBatchUser(row)">
                                         <DropdownItem>冻结用户</DropdownItem>
@@ -344,6 +345,4 @@
             padding: 0px 5px;
         }
     }
-
-   
 </style>
