@@ -108,7 +108,8 @@
                     var result = response.result;
 
                     if (!_.isNil(result)) {
-                        this.modelTable.data = result || []
+                        this.modelTable.data = result || [];
+                         this.modelTable.paging.total = result.length;
                     };
 
                     this.modelTable.loading = false;

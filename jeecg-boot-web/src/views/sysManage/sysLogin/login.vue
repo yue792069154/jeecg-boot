@@ -1,8 +1,10 @@
 <template>
     <div class="login">
         <div class="login-form">
+            
             <div class="login-form-title">
-                登陆
+                <div>上泰电气智能接地箱软件系统</div>
+                <div style="font-size:18px;margin-top:10px">后台登陆</div>
             </div>
             <div class="login-form-item">
                 <Icon type="md-person" size="23" class="login-form-item-icon" />
@@ -57,8 +59,8 @@
                 showCodeError: false,
 
                 loginForm: {
-                    userName: "admin",
-                    password: "Yue792069154!",
+                    userName: "wangzy",
+                    password: "Wangzy@wangzy123",
                     captcha: ""
                 }
             }
@@ -145,7 +147,7 @@
 
         width: 100%;
         min-height: 100%;
-        background: #f0f2f5 url(../../../assets/images/svgs/login_background.svg) no-repeat 50%;
+        background: #f0f2f5 url(../../../assets/images/login_background.svg) no-repeat 50%;
         background-size: 100%;
         padding: 110px 0 144px;
         position: relative;
@@ -170,7 +172,8 @@
             }
 
             .login-form-title {
-                font-size: 24px;
+                font-size: 26px;
+                text-align: center;
             }
 
             .login-form-item-icon {

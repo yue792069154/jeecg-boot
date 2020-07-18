@@ -1,8 +1,6 @@
 package org.jeecg.common.util;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import org.jeecg.common.exception.JeecgBootException;
@@ -85,7 +83,23 @@ public class RedisUtil {
 		}
 	}
 
-	// ============================String=============================
+
+	public  void delByKeyword(String keys) {
+		Set<String> set = redisTemplate.keys("*");
+		if (set.size() != 0) {
+			Iterator<String> it = set.iterator();
+			while (it.hasNext()) {
+				String key = it.next();
+				if (key.contains(keys)) {
+					redisTemplate.delete(key);
+				}
+			}
+		}
+	}
+
+
+
+		// ============================String=============================
 	/**
 	 * 普通缓存获取
 	 * 

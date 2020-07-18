@@ -17,6 +17,8 @@ Vue.use(Storage);
 Vue.use(ViewUI);
 Vue.use(VXETable);
 
+
+
 Vue.prototype.$XModal = VXETable.modal;
 
 new Vue({

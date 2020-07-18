@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.electrical.tBusElectricDeviceWarning.mapper.TBusElectricDeviceWarningHandleMapper">
+
+
+    <select id="getDeviceWarningHandleList" parameterType="Object" resultType="org.jeecg.modules.electrical.tBusElectricDeviceWarning.entity.TBusElectricDeviceWarningHandle">
+		   SELECT
+            t1.*,
+            t2.real_name as realName
+        FROM
+            t_bus_electric_device_warning_handle t1
+            LEFT JOIN sys_user t2 ON t1.user_id = t2.user_name
+        WHERE
+            t1.delete_code = '0' AND t1.warning_id = #{warningId}
+		   order by t1.create_time ASC
+	</select>
+
+</mapper>

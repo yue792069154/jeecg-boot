@@ -54,12 +54,17 @@
                     return true;
                 }
             },
+            drawerWidth: {
+                type: Number,
+                default () {
+                    return 600;
+                }
+            },
         },
         data() {
             return {
                 showDrawer: false,
                 drawerTitle: "",
-                drawerWidth: "600",
                 drawerStyles: {
                     height: 'calc(100% - 55px)',
                     overflow: 'auto',

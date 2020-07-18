@@ -70,6 +70,33 @@ public class MybatisInterceptor implements Interceptor {
 							field.setAccessible(false);
 						}
 					}
+					// 注入删除状态
+					if ("deleteCode".equals(field.getName())) {
+						field.setAccessible(true);
+						field.set(parameter, "0");
+						field.setAccessible(false);
+					}
+					// 注入启用状态
+					if ("statusCode".equals(field.getName())) {
+						field.setAccessible(true);
+						field.set(parameter, "0");
+						field.setAccessible(false);
+					}
+					if ("updaterId".equals(field.getName())) {
+						//获取登录用户信息
+						if (sysUser != null) {
+							// 登录账号
+							field.setAccessible(true);
+							field.set(parameter, sysUser.getUserName());
+							field.setAccessible(false);
+						}
+					}
+					if ("updateTime".equals(field.getName())) {
+						field.setAccessible(true);
+						field.set(parameter, new Date());
+						field.setAccessible(false);
+					}
+
 				} catch (Exception e) {
 				}
 			}
@@ -101,7 +128,7 @@ public class MybatisInterceptor implements Interceptor {
 			for (Field field : fields) {
 				log.debug("------field.name------" + field.getName());
 				try {
-					if ("updateBy".equals(field.getName())) {
+					if ("updaterId".equals(field.getName())) {
 						//获取登录用户信息
 						if (sysUser != null) {
 							// 登录账号

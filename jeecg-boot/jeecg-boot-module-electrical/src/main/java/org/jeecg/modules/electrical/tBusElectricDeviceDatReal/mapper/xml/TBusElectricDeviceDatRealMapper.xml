@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.electrical.tBusElectricDeviceDatReal.mapper.TBusElectricDeviceDatRealMapper">
+
+
+    <resultMap id="TBusElectricDeviceDatReal" type="org.jeecg.modules.electrical.tBusElectricDeviceDatReal.entity.TBusElectricDeviceDatReal" >
+        <id column="device_code" property="deviceCode"/>
+        <result column="device_name" property="deviceName" jdbcType="VARCHAR"/>
+        <result column="device_code" property="deviceCode" jdbcType="VARCHAR"/>
+        <result column="monitor_time" property="monitorTime" jdbcType="VARCHAR"/>
+        <collection select="getDeviceDatRealVOList"
+                    column="{deviceCode=device_code,monitorTime=monitor_time}"
+                    property="tBusElectricDeviceDatRealVOList"
+                    ofType="org.jeecg.modules.electrical.tBusElectricDeviceDatReal.entity.TBusElectricDeviceDatRealVO">
+        </collection>
+    </resultMap>
+
+    <select id="getDeviceDatRealPageList" parameterType="String"  resultMap="TBusElectricDeviceDatReal">
+        SELECT
+            t2.device_name,
+            t1.device_code,
+            MAX( t1.monitor_time ) monitor_time
+        FROM
+            t_bus_electric_device_dat_real t1
+            JOIN t_bus_electric_device t2 ON t1.device_code = t2.device_code
+        WHERE
+            t1.delete_code = '0'
+            AND t1.status_code = '0'
+            <if test="deviceCode != null and deviceCode != ''">
+                AND t1.device_code =  #{deviceCode}
+            </if>
+
+        GROUP BY
+            t1.device_code
+        ORDER BY
+            monitor_time DESC
+    </select>
+
+    <select id="getDeviceDatRealVOList"  resultType="org.jeecg.modules.electrical.tBusElectricDeviceDatReal.entity.TBusElectricDeviceDatRealVO">
+        SELECT
+            t3.point_name,
+            MAX( t1.monitor_time ) monitor_time,
+            TRUNCATE ( t1.monitor_value, 2 ) monitor_value,
+            t3.point_unit
+        FROM
+            t_bus_electric_device_dat_real t1
+            JOIN t_bus_electric_monitor_point t3 ON t1.monitor_point = t3.point_code
+            JOIN t_bus_electric_device_monitor_point t4 ON t1.device_code = t4.device_code
+        WHERE
+            t1.delete_code = '0'
+            AND t1.device_code=#{deviceCode} AND t1.monitor_time = #{monitorTime}
+            AND t3.point_code IN ( t4.point_id )
+        GROUP BY
+            t1.device_code,
+            t1.monitor_point
+        ORDER BY
+            t3.sort ASC
+    </select>
+
+
+
+
+    <resultMap id="TBusElectricDeviceDatHistory" type="org.jeecg.modules.electrical.tBusElectricDeviceDatReal.entity.TBusElectricDeviceDatReal" >
+        <id column="device_code" property="deviceCode"/>
+        <result column="device_name" property="deviceName" jdbcType="VARCHAR"/>
+        <result column="device_code" property="deviceCode" jdbcType="VARCHAR"/>
+        <result column="monitor_time" property="monitorTime" jdbcType="VARCHAR"/>
+        <collection select="getDeviceDatHistoryVOList"
+                    column="{deviceCode=device_code,monitorTime=monitor_time}"
+                    property="tBusElectricDeviceDatRealVOList"
+                    ofType="org.jeecg.modules.electrical.tBusElectricDeviceDatReal.entity.TBusElectricDeviceDatRealVO">
+        </collection>
+    </resultMap>
+
+    <select id="getDeviceHistoryPageList" parameterType="String"  resultMap="TBusElectricDeviceDatHistory">
+
+        SELECT
+        t2.device_name,
+        t1.device_code,
+        t1.monitor_time
+        FROM
+        t_bus_electric_device_dat_real t1
+        JOIN t_bus_electric_device t2 ON t1.device_code = t2.device_code
+        WHERE
+        t1.delete_code = '0'
+        AND t1.status_code = '0'
+        <if test="deviceCode != null and deviceCode != ''">
+            AND t1.device_code =  #{deviceCode}
+        </if>
+        <if test="monitorStartTime != null and monitorStartTime != '' and monitorEndTime != null and monitorEndTime != ''">
+            AND date_format(t1.monitor_time,'%Y-%m-%d') between #{monitorStartTime} and #{monitorEndTime}
+        </if>
+        GROUP BY
+        t1.monitor_time
+        ORDER BY
+        monitor_time DESC
+
+    </select>
+
+    <select id="getDeviceDatHistoryVOList"  resultType="org.jeecg.modules.electrical.tBusElectricDeviceDatReal.entity.TBusElectricDeviceDatRealVO">
+        SELECT
+            t3.point_name,
+            t1.monitor_time,
+            TRUNCATE ( t1.monitor_value, 2 ) monitor_value,
+            t3.point_unit
+        FROM
+            t_bus_electric_device_dat_real t1
+            JOIN t_bus_electric_monitor_point t3 ON t1.monitor_point = t3.point_code
+            JOIN t_bus_electric_device_monitor_point t4 ON t1.device_code = t4.device_code
+        WHERE
+            t1.delete_code = '0'
+            <if test="deviceCode != null and deviceCode != ''">
+                AND t1.device_code =  #{deviceCode} AND t1.monitor_time = #{monitorTime}
+            </if>
+            AND t3.point_code IN ( t4.point_id )
+        ORDER BY
+            t1.monitor_time DESC,
+            t3.sort ASC
+    </select>
+
+
+</mapper>

@@ -30,6 +30,12 @@ const routers = [{
         title: ''
     },
     component: (resolve) => require(['./views/sysManage/sysLogin/login.vue'], resolve)
+},{
+    path: '/test',
+    meta: {
+        title: ''
+    },
+    component: (resolve) => require(['./views/busAnalysis/busAnalysis.vue'], resolve)
 }];
 
 // , {

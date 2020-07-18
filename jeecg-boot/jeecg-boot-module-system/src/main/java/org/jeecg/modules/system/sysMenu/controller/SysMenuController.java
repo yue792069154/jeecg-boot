@@ -36,7 +36,7 @@ public class SysMenuController extends JeecgController<SysMenu, ISysMenuService>
 	/**
 	 * 分页列表查询
 	 *
-	 * @param sysMenu
+	 * @param httpServletRequest
 	 * @param pageNo
 	 * @param pageSize
 	 * @return

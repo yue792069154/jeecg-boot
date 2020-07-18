@@ -100,6 +100,62 @@ const LOG_LIST_SERVICE = (params) => getAction("/sys/log/list", appSettings.jeec
 const FILE_UPLOAD_SERVICE_URL = appSettings.jeecg.serviceSiteRootUrl + "/sys/common/upload";
 const FILE_VIEW_SERVICE_URL = appSettings.jeecg.serviceSiteRootUrl + "/sys/common/view/";
 
+
+
+//设备中心
+const DEVICE_ALL_LIST_SERVICE = (params) => getAction("/bus/tBusElectricDevice/queryall", appSettings.jeecg.serviceSiteRootUrl, params);
+const DEVICE_LIST_SERVICE = (params) => getAction("/bus/tBusElectricDevice/list", appSettings.jeecg.serviceSiteRootUrl, params);
+const DEVICE_ADD_SERVICE = (params) => postAction("/bus/tBusElectricDevice/add", appSettings.jeecg.serviceSiteRootUrl, params);
+const DEVICE_EDIT_SERVICE = (params) => putAction("/bus/tBusElectricDevice/edit", appSettings.jeecg.serviceSiteRootUrl, params);
+const DEVICE_QUERY_SERVICE = (params) => getAction("/bus/tBusElectricDevice/queryById", appSettings.jeecg.serviceSiteRootUrl, params);
+const DEVICE_DELETE_SERVICE = (params) => deleteAction("/bus/tBusElectricDevice/delete", appSettings.jeecg.serviceSiteRootUrl, params);
+const DEVICE_DELETE_BATCH_SERVICE = (params) => deleteAction("/bus/tBusElectricDevice/deleteBatch", appSettings.jeecg.serviceSiteRootUrl, params);
+const DEVICE_BATCH_SERVICE = (params) => getAction("/bus/tBusElectricDevice/frozenBatch", appSettings.jeecg.serviceSiteRootUrl, params);
+
+//设备监测项目
+const DEVICE_POINT_ALL_LIST_SERVICE = (params) => postAction("/bus/tBusElectricDeviceMonitorPoint/queryall", appSettings.jeecg.serviceSiteRootUrl, params);
+const DEVICE_POINT_ADD_SERVICE = (params) => postAction("/bus/tBusElectricDeviceMonitorPoint/add", appSettings.jeecg.serviceSiteRootUrl, params);
+const DEVICE_POINT_EDIT_SERVICE = (params) => putAction("/bus/tBusElectricDeviceMonitorPoint/edit", appSettings.jeecg.serviceSiteRootUrl, params);
+const DEVICE_POINT_QUERY_SERVICE = (params) => getAction("/bus/tBusElectricDeviceMonitorPoint/queryById", appSettings.jeecg.serviceSiteRootUrl, params);
+const DEVICE_POINT_DELETE_SERVICE = (params) => deleteAction("/bus/tBusElectricDeviceMonitorPoint/delete", appSettings.jeecg.serviceSiteRootUrl, params);
+const DEVICE_POINT_DELETE_BATCH_SERVICE = (params) => deleteAction("/bus/tBusElectricDeviceMonitorPoint/deleteBatch", appSettings.jeecg.serviceSiteRootUrl, params);
+
+
+//监测项目
+const POINT_LIST_SERVICE = (params) => getAction("/bus/tBusElectricMonitorPoint/list", appSettings.jeecg.serviceSiteRootUrl, params);
+const POINT_ADD_SERVICE = (params) => postAction("/bus/tBusElectricMonitorPoint/add", appSettings.jeecg.serviceSiteRootUrl, params);
+const POINT_EDIT_SERVICE = (params) => putAction("/bus/tBusElectricMonitorPoint/edit", appSettings.jeecg.serviceSiteRootUrl, params);
+const POINT_QUERY_SERVICE = (params) => getAction("/bus/tBusElectricMonitorPoint/queryById", appSettings.jeecg.serviceSiteRootUrl, params);
+const POINT_DELETE_SERVICE = (params) => deleteAction("/bus/tBusElectricMonitorPoint/delete", appSettings.jeecg.serviceSiteRootUrl, params);
+const POINT_DELETE_BATCH_SERVICE = (params) => deleteAction("/bus/tBusElectricMonitorPoint/deleteBatch", appSettings.jeecg.serviceSiteRootUrl, params);
+
+//告警中心
+const WARNING_LIST_SERVICE = (params) => getAction("/bus/tBusElectricDeviceWarning/list", appSettings.jeecg.serviceSiteRootUrl, params);
+const WARNING_ADD_SERVICE = (params) => postAction("/bus/tBusElectricDeviceWarning/add", appSettings.jeecg.serviceSiteRootUrl, params);
+const WARNING_EDIT_SERVICE = (params) => putAction("/bus/tBusElectricDeviceWarning/edit", appSettings.jeecg.serviceSiteRootUrl, params);
+const WARNING_QUERY_SERVICE = (params) => getAction("/bus/tBusElectricDeviceWarning/queryById", appSettings.jeecg.serviceSiteRootUrl, params);
+const WARNING_DELETE_SERVICE = (params) => deleteAction("/bus/tBusElectricDeviceWarning/delete", appSettings.jeecg.serviceSiteRootUrl, params);
+const WARNING_DELETE_BATCH_SERVICE = (params) => deleteAction("/bus/tBusElectricDeviceWarning/deleteBatch", appSettings.jeecg.serviceSiteRootUrl, params);
+const WARNING_HANDLE_ALL_LIST_SERVICE = (params) => getAction("/bus/tBusElectricDeviceWarningHandle/queryall", appSettings.jeecg.serviceSiteRootUrl, params);
+
+
+//机构管理
+const ORG_LIST_SERVICE = (params) => getAction("/bus/tBusElectricOrg/list", appSettings.jeecg.serviceSiteRootUrl, params);
+const ORG_ADD_SERVICE = (params) => postAction("/bus/tBusElectricOrg/add", appSettings.jeecg.serviceSiteRootUrl, params);
+const ORG_EDIT_SERVICE = (params) => putAction("/bus/tBusElectricOrg/edit", appSettings.jeecg.serviceSiteRootUrl, params);
+const ORG_QUERY_SERVICE = (params) => getAction("/bus/tBusElectricOrg/queryById", appSettings.jeecg.serviceSiteRootUrl, params);
+const ORG_DELETE_SERVICE = (params) => deleteAction("/bus/tBusElectricOrg/delete", appSettings.jeecg.serviceSiteRootUrl, params);
+const ORG_DELETE_BATCH_SERVICE = (params) => deleteAction("/bus/tBusElectricOrg/deleteBatch", appSettings.jeecg.serviceSiteRootUrl, params);
+const ORG_ALL_LIST_SERVICE = (params) => postAction("/bus/tBusElectricOrg/queryall", appSettings.jeecg.serviceSiteRootUrl, params);
+const ORG_BATCH_SERVICE = (params) => getAction("/bus/tBusElectricOrg/frozenBatch", appSettings.jeecg.serviceSiteRootUrl, params);
+
+
+
+//监测数据
+const MONITOR_LIST_SERVICE = (params) => getAction("/bus/tBusElectricDeviceDatReal/list", appSettings.jeecg.serviceSiteRootUrl, params);
+const MONITOR_HIS_LIST_SERVICE = (params) => getAction("/bus/tBusElectricDeviceDatReal/historyList", appSettings.jeecg.serviceSiteRootUrl, params);
+
+
 export {
 
     //登陆、注销
@@ -195,5 +251,60 @@ export {
 
     //文件上传
     FILE_UPLOAD_SERVICE_URL,
-    FILE_VIEW_SERVICE_URL
+    FILE_VIEW_SERVICE_URL,
+
+
+
+
+    //业务接口-设备
+    DEVICE_ALL_LIST_SERVICE,
+    DEVICE_LIST_SERVICE,
+    DEVICE_ADD_SERVICE,
+    DEVICE_EDIT_SERVICE,
+    DEVICE_QUERY_SERVICE,
+    DEVICE_DELETE_SERVICE,
+    DEVICE_DELETE_BATCH_SERVICE,
+    DEVICE_BATCH_SERVICE,
+
+
+    //业务接口-设备监测项目
+    DEVICE_POINT_ALL_LIST_SERVICE,
+    DEVICE_POINT_ADD_SERVICE,
+    DEVICE_POINT_EDIT_SERVICE,
+    DEVICE_POINT_QUERY_SERVICE,
+    DEVICE_POINT_DELETE_SERVICE,
+    DEVICE_POINT_DELETE_BATCH_SERVICE,
+
+
+    //业务接口-监测项目
+    POINT_LIST_SERVICE,
+    POINT_ADD_SERVICE,
+    POINT_EDIT_SERVICE,
+    POINT_QUERY_SERVICE,
+    POINT_DELETE_SERVICE,
+    POINT_DELETE_BATCH_SERVICE,
+
+    //业务接口-告警信息
+    WARNING_LIST_SERVICE,
+    WARNING_ADD_SERVICE,
+    WARNING_EDIT_SERVICE,
+    WARNING_QUERY_SERVICE,
+    WARNING_DELETE_SERVICE,
+    WARNING_DELETE_BATCH_SERVICE,
+    WARNING_HANDLE_ALL_LIST_SERVICE,
+
+
+
+    ORG_LIST_SERVICE,
+    ORG_ADD_SERVICE,
+    ORG_EDIT_SERVICE,
+    ORG_QUERY_SERVICE,
+    ORG_DELETE_SERVICE,
+    ORG_DELETE_BATCH_SERVICE,
+    ORG_ALL_LIST_SERVICE,
+    ORG_BATCH_SERVICE,
+
+    MONITOR_LIST_SERVICE,
+    MONITOR_HIS_LIST_SERVICE
+
 };

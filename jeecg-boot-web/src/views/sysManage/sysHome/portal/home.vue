@@ -79,7 +79,7 @@
             return {
                 collapsed: false,
 
-                topTitle: '快速开发平台',
+                topTitle: '上泰电气智能接地箱软件系统',
                 topSubTitle: '管理员',
                 navTitle: '系统管理',
 

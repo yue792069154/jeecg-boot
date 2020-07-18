@@ -1,0 +1,475 @@
+.analysis-icons(@x, @y) {
+    background-image: url(../../assets/images/esa-icons.png);
+    background-repeat: no-repeat;
+    background-position-x: @x;
+    background-position-y: @y;
+}
+
+html,
+body {
+    font-size: 62.5%;
+    width: 100%;
+    height: 100%;
+    
+}
+
+#analysis-layout {
+
+    width: 100%;
+    height: 100%;
+    background: #0D2A51;
+    background-image: url(../../assets/images/esa-bg.png);
+    background-size: cover;
+
+
+    .analysis-row {
+
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        height: ~"calc(100% - 82px)";
+        margin: 0;
+
+        .analysis-col-main {
+
+            width: ~"calc(100% - 1000px)";
+            display: table-cell;
+            float: none;
+            padding: 0;
+            vertical-align: top;
+
+            .analysis-col-main-map{
+                width: 100%;
+                height: calc(100% - 375px);
+            }
+
+            .analysis-col-main-bottom{
+                width: 100%;
+                height: 357px;display: flex;flex-direction: row;justify-content:space-around;align-items:center
+            }
+        }
+
+        .analysis-col-side {
+            width: 500px;
+            display: table-cell;
+            float: none;
+            padding: 0;
+            padding-left: 10px;
+            padding-right: 10px;
+            vertical-align: top;
+        }
+    }
+
+    .analysis-header-pannel {
+        display: flex;
+        width: 100%;
+        justify-content: center;
+        position: relative;
+        margin-bottom: 10px;
+
+        .analysis-header-l {
+            min-width: 188px;
+            height: 32px;
+            z-index: 1;
+            background: url(../../assets/images/esa-header-l.png) no-repeat;
+        }
+
+        .analysis-header-l-line {
+            flex-grow: 1;
+            height: 32px;
+            background: url(../../assets/images/esa-header-l-line.png) repeat;
+        }
+
+        .analysis-header-title {
+            min-width: 948px;
+            height: 72px;
+            color: white;
+            text-align: center;
+            line-height: 60px;
+            font-size: 3.6rem;
+            text-shadow: 0 0 0px #fff,
+                0 0 3px #fff,
+                0 0 10px #87d9ff;
+            background: url(../../assets/images/esa-header-c.png) no-repeat;
+        }
+
+        .analysis-header-r {
+            min-width: 188px;
+            height: 32px;
+            background: url(../../assets/images/esa-header-r.png) no-repeat;
+        }
+
+        .analysis-header-r-line {
+
+            flex-grow: 1;
+            height: 32px;
+            background: url(../../assets/images/esa-header-r-line.png) repeat;
+        }
+    }
+
+    .analysis-menu-pannel {
+
+        display: flex;
+        flex-direction: row;
+        cursor: pointer;
+        position: absolute;
+        top: 3px;
+        right: 0px;
+
+        .analysis-menu-l {
+            width: 124px;
+            height: 34px;
+            .analysis-icons(-200px, -320px);
+            position: relative;
+            left: 16px;
+            text-align: center;
+            color: #417B9B;
+            line-height: 34px;
+            font-size: 1.6rem;
+
+            &:hover {
+                .analysis-icons(-200px, -240px);
+                color: white;
+            }
+        }
+
+        .analysis-menu-r {
+            width: 124px;
+            height: 34px;
+            .analysis-icons(-360px, -240px);
+            text-align: center;
+            color: #417B9B;
+            line-height: 34px;
+            font-size: 1.6rem;
+
+            &:hover {
+                .analysis-icons(-360px, -320px);
+                color: white;
+            }
+
+        }
+
+        .analysis-menu-air {
+
+
+            position: relative;
+            padding-left: 10px;
+
+            &::before {
+                content: '';
+                position: absolute;
+                width: 18px;
+                height: 12px;
+                .analysis-icons(-1280px, -240px);
+                top: 10px;
+                left: 12px
+            }
+
+
+            &:hover {
+                &::before {
+                    .analysis-icons(-1280px, -200px);
+                }
+            }
+
+
+        }
+
+        .analysis-menu-air-active {
+            .analysis-icons(-200px, -240px);
+            color: white;
+
+            &::before {
+                .analysis-icons(-1280px, -200px);
+            }
+        }
+
+        .analysis-menu-water {
+
+
+            position: relative;
+            padding-left: 30px;
+
+            &::before {
+                content: '';
+                position: absolute;
+                width: 18px;
+                height: 15px;
+                .analysis-icons(-1360px, -240px);
+                top: 10px;
+                left: 34px
+            }
+
+
+            &:hover {
+                &::before {
+                    .analysis-icons(-1360px, -200px);
+                }
+            }
+
+
+        }
+
+        .analysis-menu-water-active {
+            .analysis-icons(-360px, -320px);
+            color: white;
+
+            &::before {
+                .analysis-icons(-1360px, -200px);
+            }
+        }
+
+
+
+
+
+
+        .analysis-menu-wry {
+
+
+            position: relative;
+
+            &::before {
+                content: '';
+                position: absolute;
+                width: 18px;
+                height: 12px;
+                .analysis-icons(-1320px, -240px);
+                top: 10px;
+                left: 15px
+            }
+
+
+            &:hover {
+                &::before {
+                    .analysis-icons(-1320px, -200px);
+                }
+            }
+
+
+        }
+
+        .analysis-menu-wry-active {
+            .analysis-icons(-200px, -240px);
+            color: white;
+
+
+            &::before {
+                .analysis-icons(-1320px, -200px);
+            }
+        }
+
+
+
+        .analysis-menu-ydzf {
+
+
+            position: relative;
+            padding-left: 34px;
+
+            &::before {
+                content: '';
+                position: absolute;
+                width: 18px;
+                height: 15px;
+                .analysis-icons(-1520px, -240px);
+                top: 10px;
+                left: 26px
+            }
+
+
+            &:hover {
+                &::before {
+                    .analysis-icons(-1520px, -200px);
+                }
+            }
+
+
+        }
+
+        .analysis-menu-ydzf-active {
+            .analysis-icons(-360px, -320px);
+            color: white;
+
+            &::before {
+                .analysis-icons(-1520px, -200px);
+            }
+        }
+
+
+
+
+
+
+    }
+
+
+    .analysis-menu-map-pannel {
+
+        position: absolute;
+        z-index: 9999;
+        top: 12px;
+        left: 13px;
+
+        display: flex;
+        flex-direction: column;
+
+        .analysis-menu-map {
+
+            cursor: pointer;
+            width: 41px;
+            height: 155px;
+            color: #69B5D1;
+            .analysis-icons(-40px, -280px);
+
+
+            &:hover {
+                color: white;
+                .analysis-icons(-120px, -280px);
+            }
+
+
+        }
+
+
+
+        .analysis-menu-map-wry {
+
+
+            position: relative;
+            padding-left: 16px;
+            padding-top: 36px;
+            font-size: 1.3rem;
+
+            &::before {
+                content: '';
+                position: absolute;
+                width: 14px;
+                height: 14px;
+                .analysis-icons(-1400px, -240px);
+                top: 18px;
+                left: 16px;
+            }
+
+
+            &:hover {
+                &::before {
+                    .analysis-icons(-1400px, -200px);
+                }
+            }
+
+
+        }
+
+
+
+        .analysis-menu-map-jkcj {
+
+
+            position: relative;
+            padding-left: 16px;
+            padding-top: 48px;
+            font-size: 1.3rem;
+
+            &::before {
+                content: '';
+                position: absolute;
+                width: 14px;
+                height: 14px;
+                .analysis-icons(-1440px, -240px);
+                top: 24px;
+                left: 16px;
+            }
+
+
+            &:hover {
+                &::before {
+                    .analysis-icons(-1440px, -200px);
+                }
+            }
+
+
+        }
+
+        .analysis-menu-map-gklw {
+
+
+            position: relative;
+            padding-left: 16px;
+            padding-top: 48px;
+            font-size: 1.3rem;
+
+            &::before {
+                content: '';
+                position: absolute;
+                width: 14px;
+                height: 14px;
+                .analysis-icons(-1480px, -240px);
+                top: 24px;
+                left: 18px;
+            }
+
+
+            &:hover {
+                &::before {
+                    .analysis-icons(-1480px, -200px);
+                }
+            }
+
+
+        }
+
+
+    }
+
+ 
+}
+
+
+
+
+.point-pannel {
+    display: flex;
+    flex-direction: row;
+
+    .point-pannel-warp {
+        width: 210px;
+        height: 48px;
+        border-right: 1px solid #3DB4DD;
+
+        .point-pannel-warp-content {
+            display: flex;
+            justify-content: space-between;
+            padding-left: 6px;
+
+            .point-pannel-warp-content-point {
+                color: #1FE4F7;
+                font-size: 13px;
+            }
+
+            .point-pannel-warp-content-tag {
+                color: #2AF0CC;
+                font-family: 宋体;
+            }
+
+            .point-pannel-warp-content-time {
+                padding-right: 5px;
+                color: #1FE4F7;
+                font-size: 12px;
+            }
+
+            .point-pannel-warp-content-value {
+                color: #1FE4F7;
+                font-size: 15px;
+            }
+
+            .point-pannel-warp-content-unit {
+                padding-right: 5px;
+                color: #1FE4F7;
+                font-size: 12px;
+            }
+        }
+
+
+    }
+}
